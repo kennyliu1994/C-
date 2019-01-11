@@ -6,13 +6,11 @@
 #include "kmeans.h"
 using namespace std;
 
-const int dimension = 4;
-//const int numOfIndividuals = 150;
-txtToVector::txtToVector(string inputTxt, vector<string> outputVector[numOfIndividuals])
+txtToVector::txtToVector(const char *inputTxt, vector<string> outputVector[], const int row, const int column)
 {
     {
         fstream IrisData;
-        IrisData.open("IrisData.txt", ios::in);
+        IrisData.open(inputTxt, ios::in);
         if (!IrisData)
             cout << "File read failed!/n";
         string line;
@@ -20,7 +18,7 @@ txtToVector::txtToVector(string inputTxt, vector<string> outputVector[numOfIndiv
         while (getline(IrisData, line))
         {
             istringstream ss(line);
-            for (int i = 0; i < dimension; i++)
+            for (int i = 0; i < column; i++)
             {
                 string word;
                 getline(ss, word, ',');
@@ -33,10 +31,4 @@ txtToVector::txtToVector(string inputTxt, vector<string> outputVector[numOfIndiv
         //cout << lineNumber << endl;
         IrisData.close();
     }
-}
-int main()
-{
-    vector<string> Iris[numOfIndividuals];
-    txtToVector test("IrisData.txt", Iris);
-    return 0;
 }

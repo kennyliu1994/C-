@@ -1,17 +1,20 @@
+#ifndef __KMEANS_H__
+#define ____KMEANS_H__
 using namespace std;
-const int numOfIndividuals = 150;
+
 class txtToVector
 {
-  public:
-    txtToVector(string inputTxt, vector<string> outputVector[numOfIndividuals]);
+public:
+  txtToVector(const char *, vector<string>[], const int, const int);
 
-  private:
+private:
 };
 class individual
 {
-  public:
-    int inWhichCluster;
-    double disToCluster;
+public:
+  int inWhichCluster;
+  double disToCluster;
 
-  private:
+private:
 };
+#endif //__KMEANS_H__
