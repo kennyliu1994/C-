@@ -5,7 +5,7 @@ using namespace std;
 class txtToVector
 {
 public:
-  txtToVector(const char *, vector<double>[], const int, const int);
+  txtToVector(const char *, vector<double>[], const unsigned int, const unsigned int);
 
 private:
 };
@@ -24,12 +24,10 @@ public:
 
 private:
 };
-class individual
+class euclidean
 {
 public:
-  int index;
-  int inWhichCluster;
-  double distanceToCluster;
+  double distance(vector<double>, vector<double>);
 
 private:
 };
