@@ -1,126 +1,159 @@
 #include "kmeans.cpp"
 
-const int numOfIndividuals = 150;
-const int dimension = 4;
-const int k = 3;
-const char *inputTxt = "IrisData.txt";
+const unsigned int n = 150; //number of individual
+const unsigned int dim = 4; //dimension
+const unsigned int k = 3;   //k-cluster
+unsigned int iteration = 100;
+const char *inputTxt = "IrisData.txt"; //input data
 class individual
 {
   public:
     vector<double> content;
-    unsigned int inWhichCluster; //0,1,2
-    double distanceToCluster;
+    unsigned int inGroup; //in which group(0,1,2...)
+    double sd;            //shortest distance to cluster
 
   private:
 };
-void initialization(individual iris[numOfIndividuals])
+class centroid
 {
-    fstream IrisData;
-    IrisData.open(inputTxt, ios::in);
-    if (!IrisData)
-        cout << "File read failed!/n";
-    string line;
-    int lineNumber = 0; //column
-    while (getline(IrisData, line))
+  public:
+    vector<double> content; //centroid
+    unsigned int size;      //how many individual belongs to it
+
+  private:
+};
+void inputData(individual iris[n])
+{
+    fstream fs;
+    fs.open(inputTxt, ios::in);
+    if (!fs)
+        cout << "Can't open file/n";
+    string line;                 //one line in txt
+    unsigned int lineNumber = 0; //how many lines in txt
+    while (getline(fs, line))
     {
         stringstream ss(line);
-        for (unsigned int i = 0; i < dimension; i++)
+        for (unsigned int i = 0; i < dim; i++)
         {
-            string word;
+            string word; //word in a line
             getline(ss, word, ',');
             double value;
-            convert test(word, value);
+            convert strToDouble(word, value); //string to double
             iris[lineNumber].content.push_back(value);
         }
         lineNumber++;
     }
     //cout << lineNumber << endl;
-    IrisData.close();
+    fs.close();
 }
-void firstCentroid(individual iris[numOfIndividuals], vector<double> centroid[k])
+void firstCentroid(individual iris[n], centroid c[k])
 {
     vector<int> index;
     rand_Kenny rd;
     for (unsigned int i = 0; i < k; i++)
     {
-        index.push_back(rd.getFromRange(1, numOfIndividuals));
-        centroid[i].assign(iris[index[i] - 1].content.begin(), iris[index[i] - 1].content.end());
+        index.push_back(rd.range(1, n));
+        c[i].content.assign(iris[index[i] - 1].content.begin(), iris[index[i] - 1].content.end());
         //cout << index[i] << endl;
     }
 }
-void shortest(individual &iris, vector<double> centroid[k])
+void show_c(centroid c[k])
 {
-    euclidean d;
-    iris.distanceToCluster = d.distance(iris.content, centroid[0]);
-    iris.inWhichCluster = 0;
-    for (unsigned int i = 0; i < k - 1; i++)
-    {
-        if (iris.distanceToCluster > d.distance(iris.content, centroid[i + 1]))
-        {
-            iris.distanceToCluster = d.distance(iris.content, centroid[i + 1]);
-            iris.inWhichCluster = i + 1;
-        }
-    }
-}
-void resetCentroid(individual iris[numOfIndividuals], vector<double> centroid[k])
-{
+    cout << k << " centroid = " << endl;
     for (unsigned int i = 0; i < k; i++)
     {
-        for (unsigned int j = 0; j < dimension; j++)
-            centroid[i][j] = 0.0;
-    }
-    for (unsigned int i = 0; i < numOfIndividuals; i++)
-    {
-        for (unsigned int m = 0; m < k; m++)
-        {
-            for (unsigned int j = 0; j < dimension; j++)
-            {
-                if (iris[i].inWhichCluster == m)
-                    centroid[m][j] += iris[i].content[j];
-                //cout << centroid[m][j] << " ";
-            }
-            //cout << endl;
-        }
-    }
-    for (unsigned int i = 0; i < k; i++)
-    {
-        for (int j = 0; j < dimension; j++)
-        {
-            centroid[i][j] = centroid[i][j] / k;
-            //cout << centroid[i][j] << " ";
-        }
-        //cout << endl;
-    }
-}
-int main()
-{
-    //vector<double> iris[numOfIndividuals];
-    //txtToVector txt("IrisData.txt", iris.content, dimension, numOfIndividuals);
-    individual iris[numOfIndividuals];
-    initialization(iris);
-    srand((unsigned)time(NULL));
-    vector<double> centroid[k];
-    firstCentroid(iris, centroid);
-    /*for (unsigned int i = 0; i < k; i++)
-    {
-        for (int j = 0; j < dimension; j++)
-            cout << centroid[i][j] << " ";
+        for (unsigned int j = 0; j < dim; j++)
+            cout << c[i].content[j] << " ";
         cout << endl;
-    }*/
-    for (unsigned int i = 0; i < numOfIndividuals; i++)
+    }
+}
+void shortest(individual iris[n], centroid c[k])
+{
+    SSE d;
+    for (unsigned int i = 0; i < n; i++)
     {
-        shortest(iris[i], centroid);
-        /*for (int j = 0; j < dimension; j++)
+        iris[i].sd = d.distance(iris[i].content, c[0].content);
+        iris[i].inGroup = 0;
+        for (unsigned int j = 0; j < k - 1; j++)
+        {
+            if (iris[i].sd > d.distance(iris[i].content, c[j + 1].content))
+            {
+                iris[i].sd = d.distance(iris[i].content, c[j + 1].content);
+                iris[i].inGroup = j + 1;
+            }
+        }
+    }
+}
+void show(individual iris[n])
+{
+    for (unsigned int i = 0; i < n; i++)
+    {
+        cout << "individual [" << i << "] = ";
+        for (unsigned int j = 0; j < dim; j++)
         {
             cout << iris[i].content[j] << " ";
         }
         cout << endl;
-        cout << iris[i].inWhichCluster << endl;*/
+        cout << "in group = " << iris[i].inGroup << endl;
     }
-    resetCentroid(iris, centroid);
-    //function(centroid)
-    //for loop
-    //minimize sum distance
-
+}
+void resetCentroid(individual iris[n], centroid c[k])
+{
+    for (unsigned int i = 0; i < k; i++)
+    {
+        for (unsigned int j = 0; j < dim; j++)
+        {
+            c[i].content[j] = 0.0;
+        }
+        c[i].size = 0;
+    }
+    for (unsigned int i = 0; i < n; i++)
+    {
+        for (unsigned int m = 0; m < k; m++)
+        {
+            if (iris[i].inGroup == m)
+            {
+                for (unsigned int j = 0; j < dim; j++)
+                {
+                    c[m].content[j] += iris[i].content[j];
+                }
+                c[m].size++;
+            }
+        }
+    }
+    for (unsigned int i = 0; i < k; i++)
+    {
+        for (unsigned int j = 0; j < dim; j++)
+        {
+            c[i].content[j] = c[i].content[j] / c[i].size;
+        }
+    }
+}
+double show_SSE(individual iris[n])
+{
+    double SSE = 0;
+    for (unsigned int i = 0; i < n; i++)
+    {
+        SSE += iris[i].sd;
+    }
+    return SSE;
+}
+int main()
+{
+    srand((unsigned)time(NULL));
+    individual iris[n];
+    centroid c[k];
+    inputData(iris);
+    firstCentroid(iris, c);
+    //show_c(c);
+    while (iteration > 0)
+    {
+        shortest(iris, c);
+        //cout << "SSE = " << show_SSE(iris) << endl;
+        resetCentroid(iris, c);
+        //show_c(c);
+        iteration--;
+    }
+    cout << "SSE = " << show_SSE(iris) << endl;
     return 0;
 }

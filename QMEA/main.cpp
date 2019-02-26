@@ -7,16 +7,16 @@
 
 using namespace std;
 //unsigned int n = 3; //item數目
-unsigned int m = 5; //Q-bit individual 長度
+unsigned int m = 13; //Q-bit individual 長度
 
 void toDecimal(double &sum, vector<double> P)
-{
+{ //1111111111
     sum = 0.0;
     int ten;
-    ten = 0;
+    ten = 10; //小數點左邊有幾位
     for (unsigned int i = 0; i < m; i++)
     {
-        sum = sum + P[i] * pow(2, ten);
+        sum = sum + P[i] * pow(2, ten - 1);
         ten--;
     }
     //cout << "sum = " << sum << endl;
@@ -146,32 +146,52 @@ int main()
     }
     //show_B(B);
     double Best;
-    Best = obj1(sum);
     /////////////////////////////////////////update
-    update(P, B, obj1(sum), Best, Q);
+    if (obj1(sum) < obj2(sum))
+    {
+        Best = obj1(sum);
+        update(P, B, obj1(sum), Best, Q);
+    }
+    else
+    {
+        Best = obj2(sum);
+        update(P, B, obj2(sum), Best, Q);
+    }
+    //update(P, B, obj1(sum), Best, Q);
     //show_Q(Q);
     /////////////////////////////////////////for loop
-    /*for (unsigned int i = 0; i < 100; i++)
+    for (unsigned int i = 0; i < 100000; i++)
     {
         make_P(Q, P);
         //show_P(P);
         toDecimal(sum, P);
         file << obj1(sum) << " " << obj2(sum) << endl;
-        if (obj1(sum) > Best)
+        if ((obj1(sum) < Best) && (obj1(sum) < obj2(sum)))
         {
             for (unsigned int i = 0; i < m; i++)
             {
                 B[i] = P[i];
+                //show_B(B);
             }
-            //show_B(B);
             Best = obj1(sum);
+            update(P, B, obj1(sum), Best, Q);
         }
-        update(P, B, obj1(sum), Best, Q);
+        if ((obj2(sum) < Best) && (obj2(sum) < obj1(sum)))
+        {
+            for (unsigned int i = 0; i < m; i++)
+            {
+                B[i] = P[i];
+                //show_B(B);
+            }
+            Best = obj2(sum);
+            update(P, B, obj2(sum), Best, Q);
+        }
         //show_Q(Q);
-    }*/
+    }
+    cout << Best << endl;
     /////////////////////////////////////////
     /////////////////////////////////////////for loop2
-    for (unsigned int i = 0; i < 100; i++)
+    /*for (unsigned int i = 0; i < 100; i++)
     {
         make_P(Q, P);
         //show_P(P);
@@ -188,7 +208,7 @@ int main()
         }
         update(P, B, obj2(sum), Best, Q);
         //show_Q(Q);
-    }
+    }*/
     /////////////////////////////////////////
     file.close();
     //cout << theta << endl;

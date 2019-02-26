@@ -2,17 +2,10 @@
 #define ____KMEANS_H__
 using namespace std;
 
-class txtToVector
-{
-public:
-  txtToVector(const char *, vector<double>[], const unsigned int, const unsigned int);
-
-private:
-};
 class rand_Kenny
 {
 public:
-  int getFromRange(const int, const int);
+  int range(const int, const int);
 
 private:
 };
@@ -24,7 +17,7 @@ public:
 
 private:
 };
-class euclidean
+class SSE
 {
 public:
   double distance(vector<double>, vector<double>);
