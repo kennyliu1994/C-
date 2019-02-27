@@ -3,7 +3,7 @@
 const unsigned int n = 150; //number of individual
 const unsigned int dim = 4; //dimension
 const unsigned int k = 3;   //k-cluster
-unsigned int iteration = 100;
+unsigned int iteration = 20;
 const char *inputTxt = "IrisData.txt"; //input data
 class individual
 {
@@ -153,7 +153,8 @@ int main()
         resetCentroid(iris, c);
         //show_c(c);
         iteration--;
+        cout << "SSE = " << show_SSE(iris) << endl;
     }
-    cout << "SSE = " << show_SSE(iris) << endl;
+    //cout << "SSE = " << show_SSE(iris) << endl;
     return 0;
 }
