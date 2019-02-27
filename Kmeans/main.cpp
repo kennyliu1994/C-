@@ -1,24 +1,24 @@
-#include "kmeans.cpp"
+#include "lib.cpp"
 
 const unsigned int n = 150; //number of individual
 const unsigned int dim = 4; //dimension
 const unsigned int k = 3;   //k-cluster
-unsigned int iteration = 20;
+unsigned int iteration = 15;
 const char *inputTxt = "IrisData.txt"; //input data
 class individual
 {
   public:
-    vector<double> content;
-    unsigned int inGroup; //in which group(0,1,2...)
-    double sd;            //shortest distance to cluster
+    vector<double> content; //individual coordinate
+    unsigned int inGroup;   //in which group(0,1,2...)
+    double sd;              //shortest distance to cluster
 
   private:
 };
 class centroid
 {
   public:
-    vector<double> content; //centroid
-    unsigned int size;      //how many individual belongs to it
+    vector<double> content; //centroid coordinate
+    unsigned int size;      //number of individual in each group
 
   private:
 };
@@ -57,16 +57,6 @@ void firstCentroid(individual iris[n], centroid c[k])
         //cout << index[i] << endl;
     }
 }
-void show_c(centroid c[k])
-{
-    cout << k << " centroid = " << endl;
-    for (unsigned int i = 0; i < k; i++)
-    {
-        for (unsigned int j = 0; j < dim; j++)
-            cout << c[i].content[j] << " ";
-        cout << endl;
-    }
-}
 void shortest(individual iris[n], centroid c[k])
 {
     SSE d;
@@ -84,27 +74,12 @@ void shortest(individual iris[n], centroid c[k])
         }
     }
 }
-void show(individual iris[n])
-{
-    for (unsigned int i = 0; i < n; i++)
-    {
-        cout << "individual [" << i << "] = ";
-        for (unsigned int j = 0; j < dim; j++)
-        {
-            cout << iris[i].content[j] << " ";
-        }
-        cout << endl;
-        cout << "in group = " << iris[i].inGroup << endl;
-    }
-}
 void resetCentroid(individual iris[n], centroid c[k])
 {
     for (unsigned int i = 0; i < k; i++)
     {
         for (unsigned int j = 0; j < dim; j++)
-        {
             c[i].content[j] = 0.0;
-        }
         c[i].size = 0;
     }
     for (unsigned int i = 0; i < n; i++)
@@ -114,9 +89,7 @@ void resetCentroid(individual iris[n], centroid c[k])
             if (iris[i].inGroup == m)
             {
                 for (unsigned int j = 0; j < dim; j++)
-                {
                     c[m].content[j] += iris[i].content[j];
-                }
                 c[m].size++;
             }
         }
@@ -124,18 +97,35 @@ void resetCentroid(individual iris[n], centroid c[k])
     for (unsigned int i = 0; i < k; i++)
     {
         for (unsigned int j = 0; j < dim; j++)
-        {
-            c[i].content[j] = c[i].content[j] / c[i].size;
-        }
+            c[i].content[j] = c[i].content[j] / c[i].size;        
+    }
+}
+void show(individual iris[n])
+{
+    for (unsigned int i = 0; i < n; i++)
+    {
+        cout << "individual [" << i << "] = ";
+        for (unsigned int j = 0; j < dim; j++)
+            cout << iris[i].content[j] << " ";
+        cout << endl;
+        cout << "in group = " << iris[i].inGroup << endl;
+    }
+}
+void show_c(centroid c[k])
+{
+    cout << k << " centroid = " << endl;
+    for (unsigned int i = 0; i < k; i++)
+    {
+        for (unsigned int j = 0; j < dim; j++)
+            cout << c[i].content[j] << " ";
+        cout << endl;
     }
 }
 double show_SSE(individual iris[n])
 {
     double SSE = 0;
     for (unsigned int i = 0; i < n; i++)
-    {
         SSE += iris[i].sd;
-    }
     return SSE;
 }
 int main()
@@ -149,12 +139,10 @@ int main()
     while (iteration > 0)
     {
         shortest(iris, c);
-        //cout << "SSE = " << show_SSE(iris) << endl;
+        cout << "SSE = " << show_SSE(iris) << endl;
         resetCentroid(iris, c);
         //show_c(c);
         iteration--;
-        cout << "SSE = " << show_SSE(iris) << endl;
     }
-    //cout << "SSE = " << show_SSE(iris) << endl;
     return 0;
 }
