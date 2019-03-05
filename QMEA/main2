@@ -1,14 +1,14 @@
-#include <iostream>
-#include <vector>
-#include <math.h>
-#include <ctime>
-#include <stdlib.h> /* srand, rand, exit*/
-#include <fstream>  /* fstream */
+#include "lib.cpp"
 
-using namespace std;
-//unsigned int n = 3; //item數目
-unsigned int m = 13; //Q-bit individual 長度
+const unsigned int n = 1;//number of individual
+const unsigned int m = 13;//Q-bit individual 長度
+class individual
+{
+  public:
+    vector<double> content; //individual coordinate
 
+  private:
+};
 void toDecimal(double &sum, vector<double> P)
 { //1111111111
     sum = 0.0;
@@ -21,7 +21,6 @@ void toDecimal(double &sum, vector<double> P)
     }
     //cout << "sum = " << sum << endl;
 }
-
 void make_P(vector<vector<double> > Q, vector<double> &P)
 {
     double x;
@@ -36,7 +35,6 @@ void make_P(vector<vector<double> > Q, vector<double> &P)
             P[i] = 0;
     }
 }
-
 void show_P(vector<double> P)
 {
     cout << "P(t) = ";
@@ -44,7 +42,6 @@ void show_P(vector<double> P)
         cout << P[i];
     cout << endl;
 }
-
 void show_B(vector<double> B)
 {
     cout << "B(t) = ";
@@ -52,7 +49,6 @@ void show_B(vector<double> B)
         cout << B[i];
     cout << endl;
 }
-
 void show_Q(vector<vector<double> > Q)
 {
     for (unsigned int i = 0; i < Q.size(); i++)
@@ -65,17 +61,14 @@ void show_Q(vector<vector<double> > Q)
         cout << Q[i][m - 1] << "]" << endl;
     }
 }
-
 double obj1(double sum)
 {
     return pow(sum, 2);
 }
-
 double obj2(double sum)
 {
     return pow(sum - 2, 2);
 }
-
 double lookup(double x, double b, double fx, double fb)
 {
     double theta;
@@ -107,9 +100,7 @@ void update(vector<double> P, vector<double> B, double obj, double Best, vector<
 }
 int main()
 {
-    /////////////////////////////////////////initialize
-    srand(time(NULL));
-    double sum = 0.0;
+    srand((unsigned)time(NULL));
     fstream file;
     file.open("output.txt", ios::out | ios::app); //開啟檔案
     if (file.fail())                              //檢查檔案是否成功開啟
@@ -118,7 +109,8 @@ int main()
         exit(1); //在不正常情形下，中斷程式的執行
     }
     /////////////////////////////////////////initialize Q(t)
-    vector<vector<double> > Q(2); //Q(2xm)
+    individual qbitI[n];
+    vector<vector<double> > Q(2); //Q(2,m)
     for (unsigned int i = 0; i < Q.size(); i++)
     {
         Q[i].resize(m);
@@ -136,8 +128,9 @@ int main()
     make_P(Q, P);
     //show_P(P);
     /////////////////////////////////////////evaluate P(t), output
+    double sum = 0.0;
     toDecimal(sum, P);
-    file << obj1(sum) << " " << obj2(sum) << endl;
+    //file << obj1(sum) << " " << obj2(sum) << endl;
     /////////////////////////////////////////store B(t), B
     vector<double> B(m);
     for (unsigned int i = 0; i < m; i++)
@@ -165,7 +158,7 @@ int main()
         make_P(Q, P);
         //show_P(P);
         toDecimal(sum, P);
-        file << obj1(sum) << " " << obj2(sum) << endl;
+        //file << obj1(sum) << " " << obj2(sum) << endl;
         if ((obj1(sum) < Best) && (obj1(sum) < obj2(sum)))
         {
             for (unsigned int i = 0; i < m; i++)
@@ -190,27 +183,7 @@ int main()
     }
     cout << Best << endl;
     /////////////////////////////////////////
-    /////////////////////////////////////////for loop2
-    /*for (unsigned int i = 0; i < 100; i++)
-    {
-        make_P(Q, P);
-        //show_P(P);
-        toDecimal(sum, P);
-        file << obj1(sum) << " " << obj2(sum) << endl;
-        if (obj2(sum) > Best)
-        {
-            for (unsigned int i = 0; i < m; i++)
-            {
-                B[i] = P[i];
-            }
-            //show_B(B);
-            Best = obj2(sum);
-        }
-        update(P, B, obj2(sum), Best, Q);
-        //show_Q(Q);
-    }*/
-    /////////////////////////////////////////
-    file.close();
+    //file.close();
     //cout << theta << endl;
     return 0;
 }

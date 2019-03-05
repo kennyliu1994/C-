@@ -97,7 +97,7 @@ void resetCentroid(individual iris[n], centroid c[k])
     for (unsigned int i = 0; i < k; i++)
     {
         for (unsigned int j = 0; j < dim; j++)
-            c[i].content[j] = c[i].content[j] / c[i].size;        
+            c[i].content[j] = c[i].content[j] / c[i].size;
     }
 }
 void show(individual iris[n])
