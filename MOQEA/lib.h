@@ -5,7 +5,9 @@ using namespace std;
 class rand_Kenny
 {
 public:
-  int range(const int, const int);
+  int range_int(const int, const int);               //[low,upper] or low <= rand <= upper
+  double range_double_1(const double, const double); //[low,upper)
+  double range_double_2(const double, const double); //[low,upper]
 
 private:
 };
@@ -14,6 +16,7 @@ class convert
 public:
   convert(string, int &);
   convert(string, double &);
+  convert(vector<double>, double &, int); //binary vector to decimal
 
 private:
 };

@@ -11,19 +11,37 @@
 #include "lib.h"
 using namespace std;
 
-int rand_Kenny::range(const int lowerBound, const int upperBound)
+int rand_Kenny::range_int(const int lowerBound, const int upperBound)
 {
     return rand() % (upperBound - lowerBound + 1) + lowerBound;
 }
-convert::convert(string intput, int &output)
+double rand_Kenny::range_double_1(const double lowerBound, const double upperBound)
 {
-    stringstream ss(intput);
+    return (double)(upperBound - lowerBound) * rand() / (RAND_MAX + 1.0) + lowerBound;
+}
+double rand_Kenny::range_double_2(const double lowerBound, const double upperBound)
+{
+    return (double)(upperBound - lowerBound) * rand() / (RAND_MAX) + lowerBound;
+}
+convert::convert(string input, int &output)
+{
+    stringstream ss(input);
     ss >> output;
 }
-convert::convert(string intput, double &output)
+convert::convert(string input, double &output)
 {
-    stringstream ss(intput);
+    stringstream ss(input);
     ss >> output;
+}
+convert::convert(vector<double> input, double &output, int pointleft)
+{
+    if (input.at(0) == 1)
+        output -= input.at(0) * pow(2, pointleft);
+    for (unsigned int i = 1; i < input.size(); i++)
+    {
+        output += input.at(i) * pow(2, pointleft - 1);
+        pointleft--;
+    }
 }
 double SSE::distance(vector<double> a, vector<double> b)
 {
