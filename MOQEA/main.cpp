@@ -1,14 +1,14 @@
 #include "lib.cpp"
 
-const unsigned int n = 3;     //number of individual
-const unsigned int s = 1;     //sign bit
-const unsigned int pl = 2;    //point left
-const unsigned int pr = 3;    //point right
-unsigned int m = s + pl + pr; //Q-bit individual 長度
-unsigned int t = 0;           //第幾代
-unsigned int iteration = 1;
+const unsigned int n = 3;         //number of individual
+const unsigned int s = 1;         //sign bit
+const unsigned int pl = 2;        //point left
+const unsigned int pr = 3;        //point right
+unsigned int m = s + pl + pr;     //Q-bit individual 長度
+unsigned int t;                   //目前第幾代
+const unsigned int iteration = 1; //總迭代數
 
-class individual
+class individual //Q,P,Pc
 {
   public:
     vector<double> alpha;
@@ -17,89 +17,109 @@ class individual
     double decimal;
     double fitness1;
     double fitness2;
+
+  private:
+};
+/*class binary //P,Pc
+{
+  public:
+    
     vector<double> Sp;
     unsigned int np;
     unsigned int index;
 
   private:
-};
+};*/
+class MOQEA
+{
+  public:
+    void initialize(class individual indi[n])
+    {
+        for (unsigned int i = 0; i < n; i++)
+        {
+            indi[i].alpha.resize(m, 1 / sqrt(2)); //Q(0)每個為根號2分之1
+            indi[i].beta.resize(m, 1 / sqrt(2));
+            indi[i].content.resize(m);
+            indi[i].decimal = 0.0;
+            indi[i].fitness1 = 0.0;
+            indi[i].fitness2 = 0.0;
+            /*P[i].Sp.resize(2 * n - 1);
+            P[i].np = 0;
+            P[i].index = 0;*/
+        }
+    };
+    void make(class individual inid[n], class individual inid_child[n])
+    {
+        rand_Kenny rd;
+        for (unsigned int i = 0; i < n; i++)
+        {
+            for (unsigned int j = 0; j < m; j++)
+            {
+                if (rd.range_double_1(0, 1.0) < pow(inid[i].beta[j], 2))
+                    inid_child[i].content[j] = 1;
+                else
+                    inid_child[i].content[j] = 0;
+            }
+        }
+    }
+    void evaluate(class individual inid[n])
+    {
+        for (unsigned int i = 0; i < n; i++)
+        {
+            convert binvec2dec(inid[i].content, inid[i].decimal, pl);
+            inid[i].fitness1 = obj1(inid[i].decimal);
+            inid[i].fitness2 = obj2(inid[i].decimal);
+        }
+    }
+    void show(class individual indi[n])
+    {
+        for (unsigned int i = 0; i < n; i++)
+        {
+            cout << "Q" << i << "(" << t << ").alpha = [";
+            for (unsigned int j = 0; j < m - 1; j++)
+            {
+                cout << indi[i].alpha[j] << " , ";
+            }
+            cout << indi[i].alpha[m - 1] << "]" << endl;
+            cout << "Q" << i << "(" << t << ").beta = [";
+            for (unsigned int j = 0; j < m - 1; j++)
+            {
+                cout << indi[i].beta[j] << " , ";
+            }
+            cout << indi[i].beta[m - 1] << "]" << endl;
+            cout << "P" << i << "(" << t << ") = ";
+            for (unsigned int j = 0; j < m; j++)
+                cout << indi[i].content[j];
+            cout << " , decimal = " << indi[i].decimal;
+            cout << " , fitness1 = " << indi[i].fitness1;
+            cout << " , fitness2 = " << indi[i].fitness2 << endl;
+        }
+    };
+    void sort(class individual inid[n], class individual inid_child[n])
+    {
+    }
 
-void initialize(individual indiv[n])
-{
-    for (unsigned int i = 0; i < n; i++)
+  private:
+    double obj1(double sum)
     {
-        indiv[i].alpha.resize(m, 1 / sqrt(2)); //Q(0)每個為根號2分之1
-        indiv[i].beta.resize(m, 1 / sqrt(2));
-        indiv[i].content.resize(m);
-        indiv[i].decimal = 0.0;
-        indiv[i].fitness1 = 0.0;
-        indiv[i].fitness2 = 0.0;
-        //indiv[i].Sp.resize(2 * n - 1);
-        indiv[i].np = 0;
-        indiv[i].index = 0;
+        return pow(sum, 2);
     }
-}
-void make_P(individual Q[n], individual P[n])
-{
-    rand_Kenny rd;
-    for (unsigned int i = 0; i < n; i++)
+    double obj2(double sum)
     {
-        for (unsigned int j = 0; j < m; j++)
-        {
-            if (rd.range_double_1(0, 1.0) < pow(Q[i].beta[j], 2))
-                P[i].content[j] = 1;
-            else
-                P[i].content[j] = 0;
-        }
+        return pow(sum - 2, 2);
     }
-}
-void show_Q(individual Q[n])
-{
-    for (unsigned int i = 0; i < n; i++)
+    class NSGA2
     {
-        cout << "Q" << i << "(" << t << ").alpha = [";
-        for (unsigned int j = 0; j < m - 1; j++)
-        {
-            cout << Q[i].alpha[j] << " , ";
-        }
-        cout << Q[i].alpha[m - 1] << "]" << endl;
-        cout << "Q" << i << "(" << t << ").beta = [";
-        for (unsigned int j = 0; j < m - 1; j++)
-        {
-            cout << Q[i].beta[j] << " , ";
-        }
-        cout << Q[i].beta[m - 1] << "]" << endl;
-    }
-}
-void show_P(individual P[n])
-{
-    for (unsigned int i = 0; i < n; i++)
-    {
-        cout << "P" << i << "(" << t << ") = ";
-        for (unsigned int j = 0; j < m; j++)
-            cout << P[i].content[j];
-        cout << " , decimal = " << P[i].decimal;
-        cout << " , fitness1 = " << P[i].fitness1;
-        cout << " , fitness2 = " << P[i].fitness2 << endl;
-    }
-}
-double obj1(double sum)
-{
-    return pow(sum, 2);
-}
-double obj2(double sum)
-{
-    return pow(sum - 2, 2);
-}
-void evaluate(individual P[n])
-{
-    for (unsigned int i = 0; i < n; i++)
-    {
-        convert binvec2dec(P[i].content, P[i].decimal, pl);
-        P[i].fitness1 = obj1(P[i].decimal);
-        P[i].fitness2 = obj2(P[i].decimal);
-    }
-}
+      public:
+        void fastNondominatedSort();
+        void crowdingDistance();
+        void show_domination_info();
+
+      private:
+        vector<double> F[2 * n];
+    };
+};
+/*
 int dominate(double x1, double x2, double y1, double y2)
 {
     if (x1 < y1)
@@ -140,9 +160,9 @@ void fastNondominatedSort(individual P[n], individual P_child[n], vector<double>
     {
         for (unsigned int j = 0; j < n; j++)
         {
-            /*cout << P[i].fitness1 << " , " << P[i].fitness2 << " , " << P_child[j].fitness1 << " , " << P_child[j].fitness2 << endl;
+            cout << P[i].fitness1 << " , " << P[i].fitness2 << " , " << P_child[j].fitness1 << " , " << P_child[j].fitness2 << endl;
             cout << dominate(P[i].fitness1, P[i].fitness2, P_child[j].fitness1, P_child[j].fitness2) << endl;
-            cout << P_child[j].index << endl;*/
+            cout << P_child[j].index << endl;
             if (dominate(P[i].fitness1, P[i].fitness2, P_child[j].fitness1, P_child[j].fitness2) == 0)
             {
                 P[i].Sp.push_back(P_child[j].index);
@@ -218,7 +238,7 @@ void show_domination_info(individual P[n], individual P_child[n], vector<double>
     for (unsigned int i = 0; i < F.size(); i++)
         cout << F[i] << ",";
     cout << "]" << endl;
-}
+}*/
 /*
 double lookup(double x, double b, double fx, double fb)
 {
@@ -253,91 +273,28 @@ int main()
 {
     srand((unsigned)time(NULL));
     fstream file;
-    file.open("output.txt", ios::out | ios::app); //開啟檔案
-    if (file.fail())                              //檢查檔案是否成功開啟
+    file.open("output.txt", ios::out | ios::app); //open
+    if (file.fail())
     {
         cout << "Can't open file!\n";
-        exit(1); //在不正常情形下，中斷程式的執行
+        exit(1);
     }
-    individual Q[n]; //n qbit individuals
-    initialize(Q);   //initialize Q(t)
-    //show_Q(Q);
-    individual P[n];
-    initialize(P);
-    make_P(Q, P); //make P(t) by Q(t)
-    evaluate(P);
-    show_P(P);
-    individual P_child[n];
-    vector<double> F[2 * n];
+    MOQEA SCH;
+    individual indi[n];   //n q-bit individuals
+    SCH.initialize(indi); //SCH.show(indi);
+    SCH.make(indi, indi);
+    SCH.evaluate(indi); SCH.show(indi);
+    individual indi_child[n];
+    SCH.initialize(indi_child);
     while (t < iteration)
     {
         t++;
-        initialize(P_child);
-        make_P(Q, P_child); //make P_child(t) by Q(t)
-        evaluate(P_child);
-        show_P(P_child);
+        SCH.make(indi, indi_child);
+        SCH.evaluate(indi_child); //SCH.show(indi_child);
+        /*
         fastNondominatedSort(P, P_child, F[0]);
-        show_domination_info(P, P_child, F[0]);
+        show_domination_info(P, P_child, F[0]);*/
     }
-
-    /*
-    /////////////////////////////////////////evaluate P(t), output
-    double sum = 0.0;
-    toDecimal(sum, P);
-    //file << obj1(sum) << " " << obj2(sum) << endl;
-    /////////////////////////////////////////store B(t), B
-    vector<double> B(m);
-    for (unsigned int i = 0; i < m; i++)
-    {
-        B[i] = P[i];
-    }
-    //show_B(B);
-    double Best;
-    /////////////////////////////////////////update
-    if (obj1(sum) < obj2(sum))
-    {
-        Best = obj1(sum);
-        update(P, B, obj1(sum), Best, Q);
-    }
-    else
-    {
-        Best = obj2(sum);
-        update(P, B, obj2(sum), Best, Q);
-    }
-    //update(P, B, obj1(sum), Best, Q);
-    //show_Q(Q);
-    /////////////////////////////////////////for loop
-    for (unsigned int i = 0; i < 100000; i++)
-    {
-        make_P(Q, P);
-        //show_P(P);
-        toDecimal(sum, P);
-        //file << obj1(sum) << " " << obj2(sum) << endl;
-        if ((obj1(sum) < Best) && (obj1(sum) < obj2(sum)))
-        {
-            for (unsigned int i = 0; i < m; i++)
-            {
-                B[i] = P[i];
-                //show_B(B);
-            }
-            Best = obj1(sum);
-            update(P, B, obj1(sum), Best, Q);
-        }
-        if ((obj2(sum) < Best) && (obj2(sum) < obj1(sum)))
-        {
-            for (unsigned int i = 0; i < m; i++)
-            {
-                B[i] = P[i];
-                //show_B(B);
-            }
-            Best = obj2(sum);
-            update(P, B, obj2(sum), Best, Q);
-        }
-        //show_Q(Q);
-    }
-    cout << Best << endl;
-    /////////////////////////////////////////
     //file.close();
-    //cout << theta << endl;*/
     return 0;
 }

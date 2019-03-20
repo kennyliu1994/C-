@@ -7,7 +7,7 @@
 #include <stdlib.h>  /* srand, rand, exit */
 #include <time.h>    /* time */
 #include <math.h>    /* sqrt, pow */
-#include <algorithm> // min
+#include <algorithm> // min, sort
 #include <iomanip>   //setw
 #include "lib.h"
 using namespace std;
