@@ -10,6 +10,7 @@
 #include <algorithm> // min
 #include <iomanip>   //setw
 #include "lib.h"
+
 using namespace std;
 
 int rand_Kenny::range_int(const int lowerBound, const int upperBound)
@@ -44,6 +45,20 @@ convert::convert(vector<double> input, double &output, int pointleft)
         pointleft--;
     }
 }
+/*convert::convert(double input, vector<double> output)
+{
+    unsigned int signBit;
+    double exponent;
+    double mantissa;
+    if (input>=0)
+    {
+        //output.push_back(0);
+    }
+    else
+    {
+        
+    }
+}*/
 double SSE::distance(vector<double> a, vector<double> b)
 {
     double sum = 0;

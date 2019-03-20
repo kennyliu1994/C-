@@ -16,7 +16,7 @@ class convert
 public:
   convert(string, int &);
   convert(string, double &);
-  convert(vector<double>, double &, int); //binary vector to decimal
+  convert(vector<double>, double &, int); //2's complement vector to decimal
 
 private:
 };

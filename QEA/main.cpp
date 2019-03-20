@@ -1,11 +1,11 @@
 #include "lib.cpp"
 
-const unsigned int n = 3;         //number of individual
-const unsigned int s = 1;         //sign bit
-const unsigned int pl = 3;        //point left
-const unsigned int pr = 2;        //point right
-unsigned int m = s + pl + pr;     //Q-bit individual 長度
-unsigned int t;                   //目前第幾代
+const unsigned int n = 3;          //number of individual
+const unsigned int s = 1;          //sign bit
+const unsigned int pl = 3;         //point left
+const unsigned int pr = 2;         //point right
+unsigned int m = s + pl + pr;      //Q-bit individual 長度
+unsigned int t;                    //目前第幾代
 const unsigned int iteration = 25; //總迭代數
 
 class individual //Q,P,Pc
@@ -113,12 +113,10 @@ class QEA
             comp.push_back(child[i]);
         }
         sort(comp.begin(), comp.end(), cmp); //對整個class的某項參數作為依據排序
-        /*for (unsigned int i = 0; i < 2*n; i++)
-        {
-            cout << comp[i].fitness << endl;
-        }*/
         for (unsigned int i = 0; i < n; i++)
         {
+            B[i].alpha.assign(comp[i].alpha.begin(), comp[i].alpha.end());
+            B[i].beta.assign(comp[i].beta.begin(), comp[i].beta.end());
             B[i].content.assign(comp[i].content.begin(), comp[i].content.end()); //取排序的一半存到B
             B[i].decimal = comp[i].decimal;
             B[i].fitness = comp[i].fitness;
