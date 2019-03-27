@@ -1,4 +1,7 @@
-#include "lib.cpp"
+#include "lib.h"
+#include <math.h>    /* sqrt, pow */
+#include <iostream> // cout
+#include <algorithm> // min sort
 
 const unsigned int n = 3;          //number of individual
 const unsigned int s = 1;          //sign bit
