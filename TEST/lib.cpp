@@ -1,14 +1,4 @@
-#include <iostream> // cout
-#include <fstream>
-#include <vector>
 #include <sstream>
-#include <string>
-#include <stdio.h>   /* printf, NULL */
-#include <stdlib.h>  /* srand, rand, exit */
-#include <time.h>    /* time */
-#include <math.h>    /* sqrt, pow */
-#include <algorithm> // min, sort
-#include <iomanip>   //setw
 #include "lib.h"
 using namespace std;
 
@@ -17,7 +7,7 @@ convert::convert(string input, int &output)
     stringstream ss(input);
     ss >> output;
 }
-convert::convert(string input, double &output)
+/*convert::convert(string input, double &output)
 {
     stringstream ss(input);
     ss >> output;
@@ -40,4 +30,4 @@ convert::convert(double input, vector<double> &output)
     {
         output.push_back(1);
     }
-};
+};*/

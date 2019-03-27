@@ -1,13 +1,10 @@
-#include "lib.cpp"
+#include "lib.h"
 
 int main()
 {
-    vector<double> ttttt;
-    convert qwe(10.0, ttttt);
-    for (unsigned int i = 0; i < ttttt.size(); i++)
-    {
-        cout << ttttt[i];
-    }
-    cout << endl;
+    string a = "5555";
+    int b = 000;
+    convert qwa(a, b);
+    cout << b << endl;
     return 0;
 }
