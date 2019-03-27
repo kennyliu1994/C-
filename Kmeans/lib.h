@@ -1,5 +1,8 @@
 #ifndef __LIB_H__
 #define ____LIB_H__
+
+#include <string>
+#include <vector>
 using namespace std;
 
 class rand_Kenny
@@ -24,4 +27,5 @@ public:
 
 private:
 };
+
 #endif //__LIB_H__

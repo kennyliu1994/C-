@@ -1,4 +1,8 @@
-#include "lib.cpp"
+#include "lib.h"
+#include <fstream>
+#include <iostream> // cout
+#include <sstream>
+#include <stdlib.h>  /* srand, rand */
 
 const unsigned int n = 150; //number of individual
 const unsigned int dim = 4; //dimension

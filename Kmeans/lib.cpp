@@ -1,15 +1,7 @@
-#include <iostream> // cout
-#include <fstream>
-#include <vector>
-#include <sstream>
-#include <string>
-#include <stdio.h>   /* printf, NULL */
-#include <stdlib.h>  /* srand, rand */
-#include <time.h>    /* time */
-#include <math.h>    /* sqrt, pow */
-#include <algorithm> // min
 #include "lib.h"
-using namespace std;
+#include <sstream>
+#include <math.h>    /* sqrt, pow */
+#include <stdlib.h>  /* srand, rand */
 
 int rand_Kenny::range(const int lowerBound, const int upperBound)
 {
