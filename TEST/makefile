@@ -9,12 +9,9 @@ CXXFLAGS = -g -Wall
 .SUFFIXS: .c .cpp .o
 .PHONY: all clean run
 
-all: linker $(EXE) run
-linker: 
-	g++ -c lib.cpp
-	ar -rc lib.a lib.o
+all: $(EXE) run
 $(EXE): $(OBJS)
-	$(CC) $(CXXFLAGS) $^ -o $@ lib.a
+	$(CC) $(CXXFLAGS) $^ -o $@
 	#g++ -g -Wall main.o -o main
 $(OBJS): $(SRCS)
 	$(CC) $(CXXFLAGS) -c $^

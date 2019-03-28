@@ -1,10 +1,12 @@
-#include "lib.h"
+#include "iostream"
+using namespace std;
+#define MIN(a, b) (((a) < (b)) ? (a) : (b))
 
 int main()
 {
-    string a = "5555";
-    int b = 000;
-    convert qwa(a, b);
-    cout << b << endl;
+    int x = 2;
+    int y = 3;
+    cout << MIN(x++, y++) << endl;
+    cout << MIN(++x, ++y) << endl;
     return 0;
 }
