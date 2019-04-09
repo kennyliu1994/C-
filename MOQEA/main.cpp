@@ -92,6 +92,7 @@ class MOQEA
     };
     void fastNondominatedSort(individual inid[n], individual inid_child[n], vector<double> F[n])
     {
+        vector<individual> R[2*n];
         for (unsigned int i = 0; i < n; i++)
         {
             inid[i].index += i + 1;
@@ -104,10 +105,10 @@ class MOQEA
         {
             for (unsigned int j = 0; j < n; j++)
             {
-                cout << "show fitness : " << endl;
-                cout << inid[i].fitness1 << " , " << inid[i].fitness2 << " , " << inid_child[j].fitness1 << " , " << inid_child[j].fitness2 << endl;
-                cout << "show dominate status : " << endl;
-                cout << dominate(inid[i].fitness1, inid[i].fitness2, inid_child[j].fitness1, inid_child[j].fitness2) << endl;
+                //cout << "show fitness : " << endl;
+                //cout << inid[i].fitness1 << " , " << inid[i].fitness2 << " , " << inid_child[j].fitness1 << " , " << inid_child[j].fitness2 << endl;
+                //cout << "show dominate status : " << endl;
+                //cout << dominate(inid[i].fitness1, inid[i].fitness2, inid_child[j].fitness1, inid_child[j].fitness2) << endl;
                 if (dominate(inid[i].fitness1, inid[i].fitness2, inid_child[j].fitness1, inid_child[j].fitness2) == 0)
                 {
                     inid[i].Sp.push_back(inid_child[j].index);
@@ -153,12 +154,14 @@ class MOQEA
             if (inid_child[i].np == 0)
                 F[0].push_back(inid_child[i].index);
         }
-        for (unsigned int i = 0; i < n; i++)
+        for (unsigned int i = 0; i < 2 * n; i++)
         {
-            if (inid[i].np == 0)
-                F[0].push_back(inid[i].index);
-            if (inid_child[i].np == 0)
-                F[0].push_back(inid_child[i].index);
+            if (F[i].size() != 0)
+            {
+                for (unsigned int j = 0; j < F[i].size(); j++)
+                {
+                }
+            }
         }
     }
     void show_domination_info(individual inid[n], individual inid_child[n], vector<double> F[n])
@@ -183,9 +186,9 @@ class MOQEA
             cout << " , np = " << inid_child[i].np;
             cout << " , index = " << inid_child[i].index << endl;
         }
-        for (unsigned int i = 0; i < n; i++)
+        for (unsigned int i = 0; i < 2 * n; i++)
         {
-            cout << "F" << i << " = [";
+            cout << "F" << i + 1 << " = [";
             for (unsigned int j = 0; j < F[i].size(); j++)
                 cout << F[i][j] << " ";
             cout << "]" << endl;

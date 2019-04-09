@@ -1,6 +1,6 @@
 #include "lib.h"
 #include <math.h>    /* sqrt, pow */
-#include <iostream> // cout
+#include <iostream>  // cout
 #include <algorithm> // min sort
 
 const unsigned int n = 3;          //number of individual
@@ -9,7 +9,7 @@ const unsigned int pl = 3;         //point left
 const unsigned int pr = 2;         //point right
 unsigned int m = s + pl + pr;      //Q-bit individual 長度
 unsigned int t;                    //目前第幾代
-const unsigned int iteration = 25; //總迭代數
+const unsigned int iteration = 15; //總迭代數
 
 class individual //Q,P,Pc
 {
