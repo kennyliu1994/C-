@@ -1,6 +1,8 @@
 #ifndef __LIB_H__
 #define ____LIB_H__
 
+#include <vector>
+#include <string>
 using namespace std;
 
 class rand_Kenny

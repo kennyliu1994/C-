@@ -1,4 +1,7 @@
-#include "lib.cpp"
+#include "lib.h"
+#include <math.h>   /* sqrt, pow */
+#include <iostream> // cout
+#include <stdlib.h> /* srand, rand, exit */
 
 const unsigned int n = 3;         //number of individual
 const unsigned int s = 1;         //sign bit
@@ -17,19 +20,12 @@ class individual //Q,P,Pc
     double decimal;
     double fitness1;
     double fitness2;
+    unsigned int index;
+    vector<double> Sp;
+    unsigned int np;
 
   private:
 };
-/*class binary //P,Pc
-{
-  public:
-    
-    vector<double> Sp;
-    unsigned int np;
-    unsigned int index;
-
-  private:
-};*/
 class MOQEA
 {
   public:
@@ -43,9 +39,8 @@ class MOQEA
             indi[i].decimal = 0.0;
             indi[i].fitness1 = 0.0;
             indi[i].fitness2 = 0.0;
-            /*P[i].Sp.resize(2 * n - 1);
-            P[i].np = 0;
-            P[i].index = 0;*/
+            indi[i].np = 0;
+            indi[i].index = 0;
         }
     };
     void make(class individual inid[n], class individual inid_child[n])
@@ -95,8 +90,106 @@ class MOQEA
             cout << " , fitness2 = " << indi[i].fitness2 << endl;
         }
     };
-    void sort(class individual inid[n], class individual inid_child[n])
+    void fastNondominatedSort(individual inid[n], individual inid_child[n], vector<double> F[n])
     {
+        for (unsigned int i = 0; i < n; i++)
+        {
+            inid[i].index += i + 1;
+        }
+        for (unsigned int i = 0; i < n; i++)
+        {
+            inid_child[i].index += i + 1 + n;
+        }
+        for (unsigned int i = 0; i < n; i++)
+        {
+            for (unsigned int j = 0; j < n; j++)
+            {
+                cout << "show fitness : " << endl;
+                cout << inid[i].fitness1 << " , " << inid[i].fitness2 << " , " << inid_child[j].fitness1 << " , " << inid_child[j].fitness2 << endl;
+                cout << "show dominate status : " << endl;
+                cout << dominate(inid[i].fitness1, inid[i].fitness2, inid_child[j].fitness1, inid_child[j].fitness2) << endl;
+                if (dominate(inid[i].fitness1, inid[i].fitness2, inid_child[j].fitness1, inid_child[j].fitness2) == 0)
+                {
+                    inid[i].Sp.push_back(inid_child[j].index);
+                    inid_child[j].np++;
+                }
+                else if (dominate(inid[i].fitness1, inid[i].fitness2, inid_child[j].fitness1, inid_child[j].fitness2) == 1)
+                {
+                    inid_child[j].Sp.push_back(inid[i].index);
+                    inid[i].np++;
+                }
+            }
+        }
+        for (unsigned int i = 0; i < n; i++)
+        {
+            for (unsigned int j = i + 1; j < n; j++)
+            {
+                if (dominate(inid[i].fitness1, inid[i].fitness2, inid[j].fitness1, inid[j].fitness2) == 0)
+                {
+                    inid[i].Sp.push_back(inid[j].index);
+                    inid[j].np++;
+                }
+                else if (dominate(inid[i].fitness1, inid[i].fitness2, inid[j].fitness1, inid[j].fitness2) == 1)
+                {
+                    inid[j].Sp.push_back(inid[i].index);
+                    inid[i].np++;
+                }
+                if (dominate(inid_child[i].fitness1, inid_child[i].fitness2, inid_child[j].fitness1, inid_child[j].fitness2) == 0)
+                {
+                    inid_child[i].Sp.push_back(inid_child[j].index);
+                    inid_child[j].np++;
+                }
+                else if (dominate(inid_child[i].fitness1, inid_child[i].fitness2, inid_child[j].fitness1, inid_child[j].fitness2) == 1)
+                {
+                    inid_child[j].Sp.push_back(inid_child[i].index);
+                    inid_child[i].np++;
+                }
+            }
+        }
+        for (unsigned int i = 0; i < n; i++)
+        {
+            if (inid[i].np == 0)
+                F[0].push_back(inid[i].index);
+            if (inid_child[i].np == 0)
+                F[0].push_back(inid_child[i].index);
+        }
+        for (unsigned int i = 0; i < n; i++)
+        {
+            if (inid[i].np == 0)
+                F[0].push_back(inid[i].index);
+            if (inid_child[i].np == 0)
+                F[0].push_back(inid_child[i].index);
+        }
+    }
+    void show_domination_info(individual inid[n], individual inid_child[n], vector<double> F[n])
+    {
+        for (unsigned int i = 0; i < n; i++)
+        {
+            cout << "inid" << i << "(" << t - 1 << ")";
+            cout << " , Sp = [";
+            for (unsigned int j = 0; j < inid[i].Sp.size(); j++)
+                cout << inid[i].Sp[j] << " ";
+            cout << "]";
+            cout << " , np = " << inid[i].np;
+            cout << " , index = " << inid[i].index << endl;
+        }
+        for (unsigned int i = 0; i < n; i++)
+        {
+            cout << "inid" << i << "(" << t << ")";
+            cout << " , Sp = [";
+            for (unsigned int j = 0; j < inid_child[i].Sp.size(); j++)
+                cout << inid_child[i].Sp[j] << " ";
+            cout << "]";
+            cout << " , np = " << inid_child[i].np;
+            cout << " , index = " << inid_child[i].index << endl;
+        }
+        for (unsigned int i = 0; i < n; i++)
+        {
+            cout << "F" << i << " = [";
+            for (unsigned int j = 0; j < F[i].size(); j++)
+                cout << F[i][j] << " ";
+            cout << "]" << endl;
+        }
     }
 
   private:
@@ -108,137 +201,33 @@ class MOQEA
     {
         return pow(sum - 2, 2);
     }
-    class NSGA2
+    int dominate(double x1, double x2, double y1, double y2)
     {
-      public:
-        void fastNondominatedSort();
-        void crowdingDistance();
-        void show_domination_info();
-
-      private:
-        vector<double> F[2 * n];
-    };
+        if (x1 < y1)
+        {
+            if (x2 > y2)
+                return 2; //none
+            else
+                return 0; //dominate
+        }
+        else if (x1 > y1)
+        {
+            if (x2 < y2)
+                return 2;
+            else
+                return 1; //is dominated
+        }
+        else
+        {
+            if (x2 < y2)
+                return 0;
+            else if (x2 == y2)
+                return 2;
+            else
+                return 1;
+        }
+    }
 };
-/*
-int dominate(double x1, double x2, double y1, double y2)
-{
-    if (x1 < y1)
-    {
-        if (x2 > y2)
-            return 2;
-        else
-            return 0;
-    }
-    else if (x1 > y1)
-    {
-        if (x2 < y2)
-            return 2;
-        else
-            return 1;
-    }
-    else
-    {
-        if (x2 < y2)
-            return 0;
-        else if (x2 == y2)
-            return 2;
-        else
-            return 1;
-    }
-}
-void fastNondominatedSort(individual P[n], individual P_child[n], vector<double> &F)
-{
-    for (unsigned int i = 0; i < n; i++)
-    {
-        P[i].index += i + 1;
-    }
-    for (unsigned int i = 0; i < n; i++)
-    {
-        P_child[i].index += i + 1 + n;
-    }
-    for (unsigned int i = 0; i < n; i++)
-    {
-        for (unsigned int j = 0; j < n; j++)
-        {
-            cout << P[i].fitness1 << " , " << P[i].fitness2 << " , " << P_child[j].fitness1 << " , " << P_child[j].fitness2 << endl;
-            cout << dominate(P[i].fitness1, P[i].fitness2, P_child[j].fitness1, P_child[j].fitness2) << endl;
-            cout << P_child[j].index << endl;
-            if (dominate(P[i].fitness1, P[i].fitness2, P_child[j].fitness1, P_child[j].fitness2) == 0)
-            {
-                P[i].Sp.push_back(P_child[j].index);
-                P_child[j].np++;
-            }
-            else if (dominate(P[i].fitness1, P[i].fitness2, P_child[j].fitness1, P_child[j].fitness2) == 1)
-            {
-                P_child[j].Sp.push_back(P[i].index);
-                P[i].np++;
-            }
-        }
-    }
-    for (unsigned int i = 0; i < n; i++)
-    {
-        for (unsigned int j = i + 1; j < n; j++)
-        {
-            if (dominate(P[i].fitness1, P[i].fitness2, P[j].fitness1, P[j].fitness2) == 0)
-            {
-                P[i].Sp.push_back(P[j].index);
-                P[j].np++;
-            }
-            else if (dominate(P[i].fitness1, P[i].fitness2, P[j].fitness1, P[j].fitness2) == 1)
-            {
-                P[j].Sp.push_back(P[i].index);
-                P[i].np++;
-            }
-            if (dominate(P_child[i].fitness1, P_child[i].fitness2, P_child[j].fitness1, P_child[j].fitness2) == 0)
-            {
-                P_child[i].Sp.push_back(P_child[j].index);
-                P_child[j].np++;
-            }
-            else if (dominate(P_child[i].fitness1, P_child[i].fitness2, P_child[j].fitness1, P_child[j].fitness2) == 1)
-            {
-                P_child[j].Sp.push_back(P_child[i].index);
-                P_child[i].np++;
-            }
-        }
-    }
-    for (unsigned int i = 0; i < n; i++)
-    {
-        if (P[i].np == 0)
-            F.push_back(P[i].index);
-    }
-    for (unsigned int i = 0; i < n; i++)
-    {
-        if (P_child[i].np == 0)
-            F.push_back(P_child[i].index);
-    }
-}
-void show_domination_info(individual P[n], individual P_child[n], vector<double> F)
-{
-    for (unsigned int i = 0; i < n; i++)
-    {
-        cout << "P" << i << "(" << t - 1 << ")";
-        cout << " , Sp = [";
-        for (unsigned int j = 0; j < P[i].Sp.size(); j++)
-            cout << P[i].Sp[j] << ",";
-        cout << "]";
-        cout << " , np = " << P[i].np;
-        cout << " , index = " << P[i].index << endl;
-    }
-    for (unsigned int i = 0; i < n; i++)
-    {
-        cout << "P" << i << "(" << t << ")";
-        cout << " , Sp = [";
-        for (unsigned int j = 0; j < P_child[i].Sp.size(); j++)
-            cout << P_child[i].Sp[j] << ",";
-        cout << "]";
-        cout << " , np = " << P_child[i].np;
-        cout << " , index = " << P_child[i].index << endl;
-    }
-    cout << "F = [";
-    for (unsigned int i = 0; i < F.size(); i++)
-        cout << F[i] << ",";
-    cout << "]" << endl;
-}*/
 /*
 double lookup(double x, double b, double fx, double fb)
 {
@@ -257,12 +246,12 @@ double lookup(double x, double b, double fx, double fb)
     }
     return theta;
 }
-void update(vector<double> P, vector<double> B, double obj, double Best, vector<vector<double>> &Q)
+void update(vector<double> inid, vector<double> B, double obj, double Best, vector<vector<double>> &Q)
 {
     double theta;
     for (unsigned int i = 0; i < m; i++)
     {
-        theta = lookup(P[i], B[i], obj, Best);
+        theta = lookup(inid[i], B[i], obj, Best);
         if (Q[0][i] * Q[1][i] > 0)
             theta = -theta;
         Q[0][i] = cos(theta) * Q[0][i] - sin(theta) * Q[1][i];
@@ -272,29 +261,36 @@ void update(vector<double> P, vector<double> B, double obj, double Best, vector<
 int main()
 {
     srand((unsigned)time(NULL));
-    fstream file;
+    /*fstream file;
     file.open("output.txt", ios::out | ios::app); //open
     if (file.fail())
     {
         cout << "Can't open file!\n";
         exit(1);
-    }
-    MOQEA SCH;
-    individual indi[n];   //n q-bit individuals
-    SCH.initialize(indi); //SCH.show(indi);
-    SCH.make(indi, indi);
-    SCH.evaluate(indi); SCH.show(indi);
+    }*/
+    MOQEA test;
+    t = 0;
+    individual indi[n]; //n q-bit individuals
+    test.initialize(indi);
+    test.make(indi, indi);
+    test.evaluate(indi); //test.show(indi);
     individual indi_child[n];
-    SCH.initialize(indi_child);
-    while (t < iteration)
+    test.initialize(indi_child);
+    do
     {
         t++;
-        SCH.make(indi, indi_child);
-        SCH.evaluate(indi_child); //SCH.show(indi_child);
+        test.make(indi, indi_child);
+        test.evaluate(indi_child); //test.show(indi_child);
+        vector<double> F[n];
+        test.fastNondominatedSort(indi, indi_child, F);
+        test.show_domination_info(indi, indi_child, F);
+        //fast
+        //crowding
+        //child to parent
         /*
-        fastNondominatedSort(P, P_child, F[0]);
-        show_domination_info(P, P_child, F[0]);*/
-    }
+        fastNondominatedSort(inid, inid_child, F[0]);
+        show_domination_info(inid, inid_child, F[0]);*/
+    } while (t < iteration);
     //file.close();
     return 0;
 }

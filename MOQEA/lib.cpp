@@ -1,17 +1,7 @@
-#include <iostream> // cout
-#include <fstream>
-#include <vector>
-#include <sstream>
-#include <string>
-#include <stdio.h>   /* printf, NULL */
-#include <stdlib.h>  /* srand, rand, exit */
-#include <time.h>    /* time */
-#include <math.h>    /* sqrt, pow */
-#include <algorithm> // min
-#include <iomanip>   //setw
 #include "lib.h"
-
-using namespace std;
+#include <sstream>
+#include <math.h>    /* sqrt, pow */
+#include <stdlib.h>  /* srand, rand, exit */
 
 int rand_Kenny::range_int(const int lowerBound, const int upperBound)
 {
@@ -45,20 +35,6 @@ convert::convert(vector<double> input, double &output, int pointleft)
         pointleft--;
     }
 }
-/*convert::convert(double input, vector<double> output)
-{
-    unsigned int signBit;
-    double exponent;
-    double mantissa;
-    if (input>=0)
-    {
-        //output.push_back(0);
-    }
-    else
-    {
-        
-    }
-}*/
 double SSE::distance(vector<double> a, vector<double> b)
 {
     double sum = 0;
