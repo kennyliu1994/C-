@@ -3,13 +3,13 @@
 #include <iostream> // cout
 #include <stdlib.h> /* srand, rand, exit */
 
-const unsigned int n = 3;         //number of individual
-const unsigned int s = 1;         //sign bit
-const unsigned int pl = 2;        //point left
-const unsigned int pr = 3;        //point right
-unsigned int m = s + pl + pr;     //Q-bit individual 長度
-unsigned int t;                   //目前第幾代
-const unsigned int iteration = 1; //總迭代數
+const unsigned int n = 2;            //number of individual
+const unsigned int s = 1;            //sign bit
+const unsigned int pl = 9;           //point left
+const unsigned int pr = 4;           //point right
+unsigned int m = s + pl + pr;        //Q-bit individual 長度
+unsigned int t;                      //目前第幾代
+const unsigned int iteration = 1000; //總迭代數
 
 class individual //Q,P,Pc
 {
@@ -41,7 +41,7 @@ class MOQEA
             indi[i].np = 0;
         }
     };
-    void make(class individual inid[n], class individual inid_child[n])
+    void make(class individual inid[n], class individual indi_child[n])
     {
         rand_Kenny rd;
         for (unsigned int i = 0; i < n; i++)
@@ -49,9 +49,9 @@ class MOQEA
             for (unsigned int j = 0; j < m; j++)
             {
                 if (rd.range_double_1(0, 1.0) < pow(inid[i].beta[j], 2))
-                    inid_child[i].content[j] = 1;
+                    indi_child[i].content[j] = 1;
                 else
-                    inid_child[i].content[j] = 0;
+                    indi_child[i].content[j] = 0;
             }
         }
     }
@@ -68,7 +68,7 @@ class MOQEA
     {
         for (unsigned int i = 0; i < n; i++)
         {
-            cout << "Q" << i << "(" << t << ").alpha = [";
+            /*cout << "Q" << i << "(" << t << ").alpha = [";
             for (unsigned int j = 0; j < m - 1; j++)
             {
                 cout << indi[i].alpha[j] << " , ";
@@ -79,7 +79,7 @@ class MOQEA
             {
                 cout << indi[i].beta[j] << " , ";
             }
-            cout << indi[i].beta[m - 1] << "]" << endl;
+            cout << indi[i].beta[m - 1] << "]" << endl;*/
             cout << "P" << i << "(" << t << ") = ";
             for (unsigned int j = 0; j < m; j++)
                 cout << indi[i].content[j];
@@ -88,15 +88,16 @@ class MOQEA
             cout << " , fitness2 = " << indi[i].fitness2 << endl;
         }
     };
-    void fastNondominatedSort(individual inid[n], individual inid_child[n], vector<double> F[2 * n])
+    void fastSortAndCrowdingD(individual inid[n], individual indi_child[n], vector<double> F[2 * n])
     {
+        R.clear();
         for (unsigned int i = 0; i < n; i++)
         {
             R.push_back(inid[i]);
         }
         for (unsigned int i = 0; i < n; i++)
         {
-            R.push_back(inid_child[i]);
+            R.push_back(indi_child[i]);
         }
         for (unsigned int i = 0; i < 2 * n - 1; i++)
         {
@@ -139,6 +140,45 @@ class MOQEA
                 }
             }
         }
+        unsigned int needed_n = n; //需要 n 個傳回 child
+        unsigned int th = 0;       //目前存到第幾個 child
+        for (unsigned int i = 0; i < 2 * n; i++)
+        {
+            if (F[i].size() == needed_n)
+            {
+                for (unsigned int j = 0; j < needed_n; j++)
+                {
+                    indi_child[th] = R[F[i][j] - 1];
+                    th++;
+                }
+                //cout << "==" << endl;
+                break;
+            }
+            else if (F[i].size() > needed_n)
+            {
+                if (F[i].size() > 2)
+                {
+                    crowdingD(F[i]);
+                }
+                for (unsigned int j = 0; j < needed_n; j++)
+                {
+                    indi_child[th] = R[F[i][j] - 1];
+                    th++;
+                }
+                //cout << ">" << endl;
+                break;
+            }
+            else
+            {
+                for (unsigned int j = 0; j < F[i].size(); j++)
+                {
+                    indi_child[th] = R[F[i][j] - 1];
+                    th++;
+                }
+                needed_n -= F[i].size();
+                //cout << "<" << endl;
+            }
+        }
     }
     void show(vector<double> F[2 * n])
     {
@@ -150,6 +190,21 @@ class MOQEA
             cout << "]" << endl;
         }
     };
+    void update(individual indi_child[n])
+    {
+        double theta;
+        for (unsigned int i = 1; i < n; i++)
+        {
+            for (unsigned int j = 0; j < m; j++)
+            {
+                theta = lookup(indi_child[i].content[j], indi_child[0].content[j], indi_child[i].fitness1, indi_child[0].fitness1);
+                if (indi_child[i].alpha[j] * indi_child[i].beta[j] > 0)
+                    theta = -theta;
+                indi_child[i].alpha[j] = cos(theta) * indi_child[i].alpha[j] - sin(theta) * indi_child[i].beta[j];
+                indi_child[i].beta[j] = sin(theta) * indi_child[i].alpha[j] + cos(theta) * indi_child[i].beta[j];
+            }
+        }
+    }
 
   private:
     vector<individual> R;
@@ -199,45 +254,36 @@ class MOQEA
             cout << " , np = " << R[i].np;
             cout << " , index = " << i + 1 << endl;
         }
-        for (unsigned int i = 0; i < 2 * n; i++)
+        /*for (unsigned int i = 0; i < 2 * n; i++)
         {
             cout << "F" << i + 1 << " = [";
             for (unsigned int j = 0; j < F[i].size(); j++)
                 cout << F[i][j] << " ";
             cout << "]" << endl;
+        }*/
+    }
+    void crowdingD(vector<double> F)
+    {
+        ;
+    }
+    double lookup(double x, double b, double fx, double fb)
+    {
+        double theta;
+        if ((x == 0) && (b = 1) && (fx < fb))
+        {
+            theta = 0.01 * M_PI;
         }
+        else if ((x == 1) && (b = 0) && (fx < fb))
+        {
+            theta = -0.01 * M_PI;
+        }
+        else
+        {
+            theta = 0;
+        }
+        return theta;
     }
 };
-/*
-double lookup(double x, double b, double fx, double fb)
-{
-    double theta;
-    if ((x == 0) && (b = 1) && (fx < fb))
-    {
-        theta = 0.01 * M_PI;
-    }
-    else if ((x == 1) && (b = 0) && (fx < fb))
-    {
-        theta = -0.01 * M_PI;
-    }
-    else
-    {
-        theta = 0;
-    }
-    return theta;
-}
-void update(vector<double> inid, vector<double> B, double obj, double Best, vector<vector<double>> &Q)
-{
-    double theta;
-    for (unsigned int i = 0; i < m; i++)
-    {
-        theta = lookup(inid[i], B[i], obj, Best);
-        if (Q[0][i] * Q[1][i] > 0)
-            theta = -theta;
-        Q[0][i] = cos(theta) * Q[0][i] - sin(theta) * Q[1][i];
-        Q[1][i] = sin(theta) * Q[0][i] + cos(theta) * Q[1][i];
-    }
-}*/
 int main()
 {
     srand((unsigned)time(NULL));
@@ -253,18 +299,28 @@ int main()
     individual indi[n]; //n q-bit individuals
     test.initialize(indi);
     test.make(indi, indi);
-    test.evaluate(indi); //test.show(indi);
+    test.evaluate(indi);
     individual indi_child[n];
-    test.initialize(indi_child);
+    vector<double> F[2 * n];
     while (t < iteration)
     {
         t++;
+        test.initialize(indi_child);
         test.make(indi, indi_child);
-        test.evaluate(indi_child); //test.show(indi_child);
-        vector<double> F[2 * n];
-        test.fastNondominatedSort(indi, indi_child, F); test.show(F);
-        //crowding
-        //child to parent
+        test.evaluate(indi_child);
+        //test.show(indi);
+        for (unsigned int i = 0; i < 2 * n; i++)
+        {
+            F[i].clear();
+        }
+        test.fastSortAndCrowdingD(indi, indi_child, F);
+        //test.show(F);
+        test.update(indi_child);
+        for (unsigned int i = 0; i < n; i++) //小孩變成父母
+        {
+            indi[i] = indi_child[i];
+        }
+        test.show(indi_child);
     }
     //file.close();
     return 0;
