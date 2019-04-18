@@ -2,14 +2,16 @@
 #include <math.h>   /* sqrt, pow */
 #include <iostream> // cout
 #include <stdlib.h> /* srand, rand, exit */
+#include <fstream>
 
-const unsigned int n = 2;            //number of individual
-const unsigned int s = 1;            //sign bit
-const unsigned int pl = 9;           //point left
-const unsigned int pr = 4;           //point right
-unsigned int m = s + pl + pr;        //Q-bit individual 長度
-unsigned int t;                      //目前第幾代
-const unsigned int iteration = 1000; //總迭代數
+const unsigned int n = 3; //number of individual
+const unsigned int s = 1; //sign bit
+//const unsigned int pl = 9;           //point left
+const unsigned int pl = 2;
+const unsigned int pr = 4;        //point right
+unsigned int m = s + pl + pr;     //Q-bit individual 長度
+unsigned int t;                   //目前第幾代
+const unsigned int iteration = 1; //總迭代數
 
 class individual //Q,P,Pc
 {
@@ -22,6 +24,7 @@ class individual //Q,P,Pc
     double fitness2;
     vector<double> Sp;
     unsigned int np;
+    unsigned int index;
 
   private:
 };
@@ -88,7 +91,7 @@ class MOQEA
             cout << " , fitness2 = " << indi[i].fitness2 << endl;
         }
     };
-    void fastSortAndCrowdingD(individual inid[n], individual indi_child[n], vector<double> F[2 * n])
+    void fastSortAndCrowdingD(individual inid[n], individual indi_child[n], vector<int> F[2 * n])
     {
         R.clear();
         for (unsigned int i = 0; i < n; i++)
@@ -98,6 +101,10 @@ class MOQEA
         for (unsigned int i = 0; i < n; i++)
         {
             R.push_back(indi_child[i]);
+        }
+        for (unsigned int i = 0; i < 2 * n; i++)
+        {
+            R[i].index = i + 1;
         }
         for (unsigned int i = 0; i < 2 * n - 1; i++)
         {
@@ -140,8 +147,17 @@ class MOQEA
                 }
             }
         }
+        show_domination_info(F);
         unsigned int needed_n = n; //需要 n 個傳回 child
         unsigned int th = 0;       //目前存到第幾個 child
+        for (unsigned int i = 0; i < 2 * n; i++)
+        {
+            if (F[i].size() > 2)
+            {
+                crowdingDAss(F, R);
+                break;
+            }
+        }
         for (unsigned int i = 0; i < 2 * n; i++)
         {
             if (F[i].size() == needed_n)
@@ -156,10 +172,6 @@ class MOQEA
             }
             else if (F[i].size() > needed_n)
             {
-                if (F[i].size() > 2)
-                {
-                    crowdingD(F[i]);
-                }
                 for (unsigned int j = 0; j < needed_n; j++)
                 {
                     indi_child[th] = R[F[i][j] - 1];
@@ -180,7 +192,7 @@ class MOQEA
             }
         }
     }
-    void show(vector<double> F[2 * n])
+    void show(vector<int> F[2 * n])
     {
         for (unsigned int i = 0; i < 2 * n; i++)
         {
@@ -208,6 +220,7 @@ class MOQEA
 
   private:
     vector<individual> R;
+    vector<individual> sortF;
     double obj1(double sum)
     {
         return pow(sum, 2);
@@ -242,7 +255,7 @@ class MOQEA
                 return 1;
         }
     }
-    void show_domination_info(vector<double> F[2 * n])
+    void show_domination_info(vector<int> F[2 * n])
     {
         for (unsigned int i = 0; i < 2 * n; i++)
         {
@@ -252,19 +265,26 @@ class MOQEA
                 cout << R[i].Sp[j] << " ";
             cout << "]";
             cout << " , np = " << R[i].np;
-            cout << " , index = " << i + 1 << endl;
+            cout << " , index = " << R[i].index << endl;
         }
-        /*for (unsigned int i = 0; i < 2 * n; i++)
+        for (unsigned int i = 0; i < 2 * n; i++)
         {
             cout << "F" << i + 1 << " = [";
             for (unsigned int j = 0; j < F[i].size(); j++)
                 cout << F[i][j] << " ";
             cout << "]" << endl;
-        }*/
+        }
     }
-    void crowdingD(vector<double> F)
+    void crowdingDAss(vector<int> F[2 * n], vector<individual> R)
     {
-        ;
+        for (unsigned int i = 0; i < 2 * n; i++)
+        {
+            sortF.clear();
+            for (unsigned int j = 0; j < F[i].size(); i++)
+            {
+                sortF.push_back(R[F[i][j] - 1]);
+            }
+        }
     }
     double lookup(double x, double b, double fx, double fb)
     {
@@ -287,13 +307,13 @@ class MOQEA
 int main()
 {
     srand((unsigned)time(NULL));
-    /*fstream file;
+    fstream file;
     file.open("output.txt", ios::out | ios::app); //open
     if (file.fail())
     {
         cout << "Can't open file!\n";
         exit(1);
-    }*/
+    }
     MOQEA test;
     t = 0;
     individual indi[n]; //n q-bit individuals
@@ -301,7 +321,7 @@ int main()
     test.make(indi, indi);
     test.evaluate(indi);
     individual indi_child[n];
-    vector<double> F[2 * n];
+    vector<int> F[2 * n];
     while (t < iteration)
     {
         t++;
@@ -314,13 +334,13 @@ int main()
             F[i].clear();
         }
         test.fastSortAndCrowdingD(indi, indi_child, F);
-        //test.show(F);
         test.update(indi_child);
         for (unsigned int i = 0; i < n; i++) //小孩變成父母
         {
             indi[i] = indi_child[i];
+            //file << indi_child[i].fitness1 << " " << indi_child[i].fitness2 << endl;
         }
-        test.show(indi_child);
+        //test.show(indi_child);
     }
     //file.close();
     return 0;
