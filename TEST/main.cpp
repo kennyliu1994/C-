@@ -1,12 +1,10 @@
 #include "iostream"
 using namespace std;
-#define MIN(a, b) (((a) < (b)) ? (a) : (b))
 
 int main()
 {
-    int x = 2;
-    int y = 3;
-    cout << MIN(x++, y++) << endl;
-    cout << MIN(++x, ++y) << endl;
+    int a[10][20][30][40];
+    cout << a[0] - a[6] << endl;
+    cout << a[0][0] - a[6][0] << endl;
     return 0;
 }
