@@ -3,15 +3,16 @@
 #include <iostream> // cout
 #include <stdlib.h> /* srand, rand, exit */
 #include <fstream>
+#include <algorithm> // min sort
+#include <limits>    // numeric_limits<double>::max()
 
-const unsigned int n = 3; //number of individual
+const unsigned int n = 2; //number of individual
 const unsigned int s = 1; //sign bit
-//const unsigned int pl = 9;           //point left
-const unsigned int pl = 2;
-const unsigned int pr = 4;        //point right
+const unsigned int pl = 9;           //point left
+const unsigned int pr = 8;        //point right
 unsigned int m = s + pl + pr;     //Q-bit individual 長度
 unsigned int t;                   //目前第幾代
-const unsigned int iteration = 1; //總迭代數
+const unsigned int iteration = 500; //總迭代數
 
 class individual //Q,P,Pc
 {
@@ -19,10 +20,11 @@ class individual //Q,P,Pc
     vector<double> alpha;
     vector<double> beta;
     vector<double> content;
+    vector<double> Sp;
     double decimal;
     double fitness1;
     double fitness2;
-    vector<double> Sp;
+    double d;
     unsigned int np;
     unsigned int index;
 
@@ -38,10 +40,13 @@ class MOQEA
             indi[i].alpha.resize(m, 1 / sqrt(2)); //Q(0)每個為根號2分之1
             indi[i].beta.resize(m, 1 / sqrt(2));
             indi[i].content.resize(m);
+            indi[i].Sp.clear();
             indi[i].decimal = 0.0;
             indi[i].fitness1 = 0.0;
             indi[i].fitness2 = 0.0;
+            indi[i].d = 0.0;
             indi[i].np = 0;
+            indi[i].index = 0;
         }
     };
     void make(class individual inid[n], class individual indi_child[n])
@@ -91,6 +96,47 @@ class MOQEA
             cout << " , fitness2 = " << indi[i].fitness2 << endl;
         }
     };
+    void crowdingDAss(vector<int> &F, vector<individual> R)
+    {
+        sortF.clear();
+        for (unsigned int i = 0; i < F.size(); i++)
+        {
+            sortF.push_back(R[F[i] - 1]);
+        }
+        //依照fit1排序一次
+        sort(sortF.begin(), sortF.end(), cmpByFit1); //對整個class的某項參數作為依據排序
+        //清空d
+        for (unsigned int i = 0; i < sortF.size(); i++)
+        {
+            sortF[i].d = 0;
+        }
+        //設頭尾的d為無限大
+        sortF.front().d = numeric_limits<double>::max();
+        sortF.back().d = numeric_limits<double>::max();
+        //show_d(sortF);
+        //算中間的d
+        for (unsigned int i = 1; i < sortF.size() - 1; i++)
+        {
+            sortF[i].d += (sortF[i + 1].fitness1 - sortF[i - 1].fitness1) / (sortF.back().fitness1 - sortF.front().fitness1);
+        }
+        //show_d(sortF);
+        //依照fit2排序一次
+        sort(sortF.begin(), sortF.end(), cmpByFit2); //對整個class的某項參數作為依據排序
+        //算中間的d
+        for (unsigned int i = 1; i < sortF.size() - 1; i++)
+        {
+            sortF[i].d += (sortF[i + 1].fitness2 - sortF[i - 1].fitness2) / (sortF.back().fitness2 - sortF.front().fitness2);
+        }
+        //show_d(sortF);
+        //依照d排序
+        sort(sortF.begin(), sortF.end(), cmpByd);
+        //改變F裡的順序
+        F.clear();
+        for (unsigned int i = 0; i < sortF.size(); i++)
+        {
+            F.push_back(sortF[i].index);
+        }
+    }
     void fastSortAndCrowdingD(individual inid[n], individual indi_child[n], vector<int> F[2 * n])
     {
         R.clear();
@@ -147,17 +193,17 @@ class MOQEA
                 }
             }
         }
-        show_domination_info(F);
+        //show_domination_info(F);
         unsigned int needed_n = n; //需要 n 個傳回 child
         unsigned int th = 0;       //目前存到第幾個 child
         for (unsigned int i = 0; i < 2 * n; i++)
         {
             if (F[i].size() > 2)
             {
-                crowdingDAss(F, R);
-                break;
+                crowdingDAss(F[i], R);
             }
         }
+        //show_domination_info(F);
         for (unsigned int i = 0; i < 2 * n; i++)
         {
             if (F[i].size() == needed_n)
@@ -275,16 +321,26 @@ class MOQEA
             cout << "]" << endl;
         }
     }
-    void crowdingDAss(vector<int> F[2 * n], vector<individual> R)
+    static bool cmpByFit1(individual const &a, individual const &b)
     {
-        for (unsigned int i = 0; i < 2 * n; i++)
+        return a.fitness1 < b.fitness1;
+    };
+    static bool cmpByFit2(individual const &a, individual const &b)
+    {
+        return a.fitness2 < b.fitness2;
+    };
+    static bool cmpByd(individual const &a, individual const &b)
+    {
+        return a.d > b.d;
+    };
+    void show_d(vector<individual> sortF)
+    {
+        cout << "sortF[i].d = [";
+        for (unsigned int i = 0; i < sortF.size(); i++)
         {
-            sortF.clear();
-            for (unsigned int j = 0; j < F[i].size(); i++)
-            {
-                sortF.push_back(R[F[i][j] - 1]);
-            }
+            cout << sortF[i].d << " ";
         }
+        cout << "]" << endl;
     }
     double lookup(double x, double b, double fx, double fb)
     {
@@ -329,6 +385,7 @@ int main()
         test.make(indi, indi_child);
         test.evaluate(indi_child);
         //test.show(indi);
+        //test.show(indi_child);
         for (unsigned int i = 0; i < 2 * n; i++)
         {
             F[i].clear();
@@ -340,7 +397,7 @@ int main()
             indi[i] = indi_child[i];
             //file << indi_child[i].fitness1 << " " << indi_child[i].fitness2 << endl;
         }
-        //test.show(indi_child);
+        test.show(indi_child);
     }
     //file.close();
     return 0;
