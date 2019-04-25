@@ -27,8 +27,8 @@ convert::convert(string input, double &output)
 }
 convert::convert(vector<double> input, double &output, int pointleft)
 {
-    if (input.at(0) == 1)
-        output -= input.at(0) * pow(2, pointleft);
+    /*if (input.at(0) == 1)
+        output -= input.at(0) * pow(2, pointleft);*/
     for (unsigned int i = 1; i < input.size(); i++)
     {
         output += input.at(i) * pow(2, pointleft - 1);

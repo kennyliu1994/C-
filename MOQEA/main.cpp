@@ -1,32 +1,120 @@
 #include "lib.h"
-#include <math.h>   /* sqrt, pow */
 #include <iostream> // cout
 #include <stdlib.h> /* srand, rand, exit */
 #include <fstream>
 #include <algorithm> // min sort
 #include <limits>    // numeric_limits<double>::max()
 
-const unsigned int n = 2; //number of individual
-const unsigned int s = 1; //sign bit
-const unsigned int pl = 9;           //point left
-const unsigned int pr = 8;        //point right
-unsigned int m = s + pl + pr;     //Q-bit individual 長度
-unsigned int t;                   //目前第幾代
-const unsigned int iteration = 500; //總迭代數
+const unsigned int dim = 30; //dimension
+const unsigned int n = 10;   //number of individual
+const unsigned int s = 1;    //sign bit
+//const unsigned int pl = 9;  //point left SCH
+//const unsigned int pl = 3;          //point left KUR
+const unsigned int pl = 0;          //point left ZDT2
+const unsigned int pr = 10;         //point right
+unsigned int m = s + pl + pr;       //Q-bit individual 長度
+unsigned int t;                     //目前第幾代
+const unsigned int iteration = 100; //總迭代數
 
 class individual //Q,P,Pc
 {
   public:
     vector<double> alpha;
     vector<double> beta;
-    vector<double> content;
+    vector<double> content[dim];
     vector<double> Sp;
-    double decimal;
+    vector<double> decimal;
     double fitness1;
     double fitness2;
     double d;
     unsigned int np;
     unsigned int index;
+
+  private:
+};
+class testFunction
+{
+  public:
+    void SCH(class individual indi[n])
+    {
+        for (unsigned int i = 0; i < n; i++)
+        {
+            for (unsigned int j = 0; j < dim; j++)
+            {
+                indi[i].fitness1 = pow(indi[i].decimal[j], 2);
+                indi[i].fitness2 = pow(indi[i].decimal[j] - 2, 2);
+            }
+        }
+    }
+    /*void KUR(class individual indi[n])
+    {
+        double res1;
+        double res2;
+        res1 = -0.2 * sqrt((indi[0].decimal * indi[0].decimal) + (indi[1].decimal * indi[1].decimal));
+        res2 = -0.2 * sqrt((indi[1].decimal * indi[1].decimal) + (indi[2].decimal * indi[2].decimal));        
+        for (unsigned int i = 0; i < 3; i++)
+        {
+            indi[i].fitness1 = -10.0 * (exp(res1) + exp(res2));
+            indi[i].fitness2 += pow(fabs(indi[i].decimal), 0.8) + 5.0 * sin(pow(indi[i].decimal, 3.0));
+        }
+    }*/
+    void ZDT1(class individual indi[n])
+    {
+        double f1, f2, g, h;
+        for (unsigned int i = 0; i < n; i++)
+        {
+            f1 = indi[i].decimal[0];
+            g = 0.0;
+            for (unsigned int j = 1; j < dim; j++)
+            {
+                g += indi[i].decimal[j];
+            }
+            g = 9.0 * g / 29.0;
+            g += 1.0;
+            h = 1.0 - sqrt(f1 / g);
+            f2 = g * h;
+            indi[i].fitness1 = f1;
+            indi[i].fitness2 = f2;
+        }
+    }
+    void ZDT2(class individual indi[n])
+    {
+        double f1, f2, g, h;
+        for (unsigned int i = 0; i < n; i++)
+        {
+            f1 = indi[i].decimal[0];
+            g = 0;
+            for (unsigned int j = 1; j < dim; j++)
+            {
+                g += indi[i].decimal[j];
+            }
+            g = 9 * g / 29;
+            g += 1;
+            h = 1 - pow((f1 / g), 2);
+            f2 = g * h;
+            indi[i].fitness1 = f1;
+            indi[i].fitness2 = f2;
+        }
+    }
+    void ZDT3(class individual indi[n])
+    {
+        double f1, f2, g, h;
+        for (unsigned int i = 0; i < n; i++)
+        {
+            f1 = indi[i].decimal[0];
+            g = 0;
+            for (unsigned int j = 1; j < dim; j++)
+            {
+                g += indi[i].decimal[j];
+            }
+            g = 9.0 * g / 29.0;
+            g += 1.0;
+            h = 1.0 - sqrt(f1 / g) - (f1 / g) * sin(10.0 * M_PI * f1);
+            f2 = g * h;
+            indi[i].fitness1 = f1;
+            indi[i].fitness2 = f2;
+        }
+    }
 
   private:
 };
@@ -37,11 +125,17 @@ class MOQEA
     {
         for (unsigned int i = 0; i < n; i++)
         {
+            //indi[i].alpha.clear();
             indi[i].alpha.resize(m, 1 / sqrt(2)); //Q(0)每個為根號2分之1
+            //indi[i].beta.clear();
             indi[i].beta.resize(m, 1 / sqrt(2));
-            indi[i].content.resize(m);
+            for (unsigned int j = 0; j < dim; j++)
+            {
+                indi[i].content[j].resize(m);
+            }
+            indi[i].decimal.clear();
+            indi[i].decimal.resize(dim, 0);
             indi[i].Sp.clear();
-            indi[i].decimal = 0.0;
             indi[i].fitness1 = 0.0;
             indi[i].fitness2 = 0.0;
             indi[i].d = 0.0;
@@ -49,50 +143,56 @@ class MOQEA
             indi[i].index = 0;
         }
     };
-    void make(class individual inid[n], class individual indi_child[n])
+    void make(class individual indi[n], class individual indi_child[n])
     {
         rand_Kenny rd;
         for (unsigned int i = 0; i < n; i++)
         {
-            for (unsigned int j = 0; j < m; j++)
+            for (unsigned int j = 0; j < dim; j++)
             {
-                if (rd.range_double_1(0, 1.0) < pow(inid[i].beta[j], 2))
-                    indi_child[i].content[j] = 1;
-                else
-                    indi_child[i].content[j] = 0;
+                for (unsigned int k = 0; k < m; k++)
+                {
+                    if (rd.range_double_1(0, 1.0) < pow(indi[i].beta[k], 2))
+                        indi_child[i].content[j][k] = 1;
+                    else
+                        indi_child[i].content[j][k] = 0;
+                }
             }
         }
     }
-    void evaluate(class individual inid[n])
+    void evaluate(class individual indi[n])
     {
         for (unsigned int i = 0; i < n; i++)
         {
-            convert binvec2dec(inid[i].content, inid[i].decimal, pl);
-            inid[i].fitness1 = obj1(inid[i].decimal);
-            inid[i].fitness2 = obj2(inid[i].decimal);
+            for (unsigned int j = 0; j < dim; j++)
+            {
+                convert binvec2dec(indi[i].content[j], indi[i].decimal[j], pl);
+            }
         }
+        testFunction test;
+        test.ZDT3(indi);
     }
     void show(class individual indi[n])
     {
         for (unsigned int i = 0; i < n; i++)
         {
-            /*cout << "Q" << i << "(" << t << ").alpha = [";
-            for (unsigned int j = 0; j < m - 1; j++)
-            {
-                cout << indi[i].alpha[j] << " , ";
-            }
-            cout << indi[i].alpha[m - 1] << "]" << endl;
-            cout << "Q" << i << "(" << t << ").beta = [";
-            for (unsigned int j = 0; j < m - 1; j++)
-            {
-                cout << indi[i].beta[j] << " , ";
-            }
-            cout << indi[i].beta[m - 1] << "]" << endl;*/
             cout << "P" << i << "(" << t << ") = ";
-            for (unsigned int j = 0; j < m; j++)
-                cout << indi[i].content[j];
-            cout << " , decimal = " << indi[i].decimal;
-            cout << " , fitness1 = " << indi[i].fitness1;
+            for (unsigned int j = 0; j < dim; j++)
+            {
+                for (unsigned int k = 0; k < m; k++)
+                {
+                    cout << indi[i].content[j][k];
+                }
+                cout << " , ";
+            }
+            cout << endl
+                 << "decimal = ";
+            for (unsigned int j = 0; j < dim; j++)
+            {
+                cout << indi[i].decimal[j] << " , ";
+            }
+            cout << endl
+                 << "fitness1 = " << indi[i].fitness1;
             cout << " , fitness2 = " << indi[i].fitness2 << endl;
         }
     };
@@ -137,12 +237,12 @@ class MOQEA
             F.push_back(sortF[i].index);
         }
     }
-    void fastSortAndCrowdingD(individual inid[n], individual indi_child[n], vector<int> F[2 * n])
+    void fastSortAndCrowdingD(individual indi[n], individual indi_child[n], vector<int> F[2 * n])
     {
         R.clear();
         for (unsigned int i = 0; i < n; i++)
         {
-            R.push_back(inid[i]);
+            R.push_back(indi[i]);
         }
         for (unsigned int i = 0; i < n; i++)
         {
@@ -248,18 +348,39 @@ class MOQEA
             cout << "]" << endl;
         }
     };
-    void update(individual indi_child[n])
+    void update1(individual indi_child[n])
     {
         double theta;
         for (unsigned int i = 1; i < n; i++)
         {
-            for (unsigned int j = 0; j < m; j++)
+            for (unsigned int j = 0; j < dim; j++)
             {
-                theta = lookup(indi_child[i].content[j], indi_child[0].content[j], indi_child[i].fitness1, indi_child[0].fitness1);
-                if (indi_child[i].alpha[j] * indi_child[i].beta[j] > 0)
-                    theta = -theta;
-                indi_child[i].alpha[j] = cos(theta) * indi_child[i].alpha[j] - sin(theta) * indi_child[i].beta[j];
-                indi_child[i].beta[j] = sin(theta) * indi_child[i].alpha[j] + cos(theta) * indi_child[i].beta[j];
+                for (unsigned int k = 0; k < m; k++)
+                {
+                    theta = lookup(indi_child[i].content[j][k], indi_child[0].content[j][k], indi_child[i].fitness1, indi_child[0].fitness1);
+                    if (indi_child[i].alpha[m] * indi_child[i].beta[m] > 0)
+                        theta = -theta;
+                    indi_child[i].alpha[k] = cos(theta) * indi_child[i].alpha[k] - sin(theta) * indi_child[i].beta[k];
+                    indi_child[i].beta[k] = sin(theta) * indi_child[i].alpha[k] + cos(theta) * indi_child[i].beta[k];
+                }
+            }
+        }
+    }
+    void update2(individual indi_child[n])
+    {
+        double theta;
+        for (unsigned int i = 1; i < n; i++)
+        {
+            for (unsigned int j = 0; j < dim; j++)
+            {
+                for (unsigned int k = 0; k < m; k++)
+                {
+                    theta = lookup(indi_child[i].content[j][k], indi_child[0].content[j][k], indi_child[i].fitness2, indi_child[0].fitness2);
+                    if (indi_child[i].alpha[k] * indi_child[i].beta[k] > 0)
+                        theta = -theta;
+                    indi_child[i].alpha[k] = cos(theta) * indi_child[i].alpha[k] - sin(theta) * indi_child[i].beta[k];
+                    indi_child[i].beta[k] = sin(theta) * indi_child[i].alpha[k] + cos(theta) * indi_child[i].beta[k];
+                }
             }
         }
     }
@@ -267,14 +388,6 @@ class MOQEA
   private:
     vector<individual> R;
     vector<individual> sortF;
-    double obj1(double sum)
-    {
-        return pow(sum, 2);
-    }
-    double obj2(double sum)
-    {
-        return pow(sum - 2, 2);
-    }
     int dominate(double x1, double x2, double y1, double y2)
     {
         if (x1 < y1)
@@ -384,21 +497,23 @@ int main()
         test.initialize(indi_child);
         test.make(indi, indi_child);
         test.evaluate(indi_child);
-        //test.show(indi);
-        //test.show(indi_child);
+        test.show(indi);
+        test.show(indi_child);
         for (unsigned int i = 0; i < 2 * n; i++)
         {
             F[i].clear();
         }
         test.fastSortAndCrowdingD(indi, indi_child, F);
-        test.update(indi_child);
+        //test.show(indi_child);
+        //test.update1(indi_child);
+        test.update2(indi_child);
         for (unsigned int i = 0; i < n; i++) //小孩變成父母
         {
             indi[i] = indi_child[i];
-            //file << indi_child[i].fitness1 << " " << indi_child[i].fitness2 << endl;
+            file << indi_child[i].fitness1 << " " << indi_child[i].fitness2 << endl;
         }
-        test.show(indi_child);
+        //test.show(indi_child);
     }
-    //file.close();
+    file.close();
     return 0;
 }

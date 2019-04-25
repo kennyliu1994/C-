@@ -1,10 +1,17 @@
 #include "iostream"
+#include "math.h"
 using namespace std;
 
 int main()
 {
-    int a[10][20][30][40];
-    cout << a[0] - a[6] << endl;
-    cout << a[0][0] - a[6][0] << endl;
+    double f1, f2, g, h;
+    g=0;
+    g = 9 * g / 29;
+    g += 1;
+    h = 1 - pow((f1 / g), 2);
+    f2 = g * h;
+    cout<<g<<endl;
+    cout<<h<<endl;
+    cout<<f2<<endl;
     return 0;
 }

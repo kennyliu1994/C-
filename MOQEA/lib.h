@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <string>
+#include <math.h> /* sqrt, pow */
 using namespace std;
 
 class rand_Kenny
