@@ -14,7 +14,7 @@ const unsigned int pl = 0;          //point left ZDT2
 const unsigned int pr = 10;         //point right
 unsigned int m = s + pl + pr;       //Q-bit individual 長度
 unsigned int t;                     //目前第幾代
-const unsigned int iteration = 100; //總迭代數
+const unsigned int iteration = 250; //總迭代數
 
 class individual //Q,P,Pc
 {
@@ -497,8 +497,8 @@ int main()
         test.initialize(indi_child);
         test.make(indi, indi_child);
         test.evaluate(indi_child);
-        test.show(indi);
-        test.show(indi_child);
+        //test.show(indi);
+        //test.show(indi_child);
         for (unsigned int i = 0; i < 2 * n; i++)
         {
             F[i].clear();
