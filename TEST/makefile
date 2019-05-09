@@ -1,22 +1,22 @@
 SHELL := /bin/bash
 CC := g++
+CXXFLAGS = -g -Wall
 SRCS = main.cpp
 OBJS = $(SRCS:.cpp=.o)
-EXE = $(OBJS:.o=)
-CXXFLAGS = -g -Wall
+vpath ../headers
 
 .SUFFIXES:
 .SUFFIXS: .c .cpp .o
 .PHONY: all clean run
 
-all: $(EXE) run
-$(EXE): $(OBJS)
+all: main run
+main: $(OBJS)
 	$(CC) $(CXXFLAGS) $^ -o $@
 	#g++ -g -Wall main.o -o main
 $(OBJS): $(SRCS)
-	$(CC) $(CXXFLAGS) -c $^
+	$(CC) $(CXXFLAGS) -c $<
 	#g++ -g -Wall -c main.cpp
 run: 
-	./$(EXE)
+	./main
 clean: 
-	rm -rf $(OBJS) $(EXE)
+	rm -rf $(OBJS) main
