@@ -19,4 +19,4 @@ $(OBJS): $(SRCS)
 run: 
 	./$(EXE)
 clean: 
-	rm -rf $(OBJS) $(EXE) lib.a lib.o
+	rm -rf $(OBJS) $(EXE)
