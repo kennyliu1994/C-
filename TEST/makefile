@@ -1,9 +1,8 @@
 SHELL := /bin/bash
 CC := g++
 CXXFLAGS = -g -Wall
-SRCS = main.cpp
+SRCS = $(wildcard *.cpp)
 OBJS = $(SRCS:.cpp=.o)
-vpath ../headers
 
 .SUFFIXES:
 .SUFFIXS: .c .cpp .o
@@ -12,10 +11,10 @@ vpath ../headers
 all: main run
 main: $(OBJS)
 	$(CC) $(CXXFLAGS) $^ -o $@
-	#g++ -g -Wall main.o -o main
+	#g++ -g -Wall main.o lib.o -o main
 $(OBJS): $(SRCS)
-	$(CC) $(CXXFLAGS) -c $<
-	#g++ -g -Wall -c main.cpp
+	$(CC) $(CXXFLAGS) -c $^
+	#g++ -g -Wall -c main.cpp lib.cpp
 run: 
 	./main
 clean: 
