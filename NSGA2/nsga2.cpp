@@ -2,6 +2,7 @@
 #include <math.h>    /* sqrt, pow */
 #include <algorithm> // min sort
 #include <limits>    // numeric_limits<double>::max()
+#include <fstream>
 //#define debug
 #ifndef debug
 #define trace(x) \
@@ -66,36 +67,46 @@ void nsga2::testFunInit()
         lowerbound = 0;
         upperbound = 1;
     }
-    trace("==========================================" << endl);
+    /*trace("==========================================" << endl);
     trace("Load Data" << endl);
     trace("==========================================" << endl);
     trace("Test DataSet = " << testFunName << endl);
     trace("dim = " << dim << endl);
     trace("Upperbound = " << upperbound << endl);
     trace("lowerbound = " << lowerbound << endl);
-    trace("==========================================" << endl);
+    trace("==========================================" << endl);*/
 }
 void nsga2::main()
 {
-    tournament.assign(popSize, 0);      
-    bestFit.resize(popSize, 0); 
+    fstream file;
+    file.open("output.txt", ios::out | ios::app); //open
+    if (file.fail())
+    {
+        cout << "Can't open file!\n";
+        exit(1);
+    }
+    tournament.assign(popSize, 0);
+    final_cofitness.assign(popSize, 0);
+    best_fitness = 999;
+    final_fitness.assign(objNum, 0);
+    best_value.assign(dim, 0);
     chromosome parent[popSize];
     chromosome child[popSize];
-    trace("Initialization" << endl);
-    trace("==========================================" << endl);
+    /*trace("Initialization" << endl);
+    trace("==========================================" << endl);*/
     for (unsigned int i = 0; i < popSize; i++)
     {
         parent[i].np = 0;
         parent[i].d = 0.0;
         parent[i].Sp.clear();
-        parent[i].value.assign(dim, 0);
+        parent[i].value.clear();
         parent[i].fitness1 = 0.0;
         parent[i].fitness2 = 0.0;
-        trace("Parent[" << i << "] : " << endl);
+        /*trace("Parent[" << i << "] : " << endl);
         trace("np = " << parent[i].np << endl);
-        trace("d = " << parent[i].d << endl);
+        trace("d = " << parent[i].d << endl);*/
     }
-    trace("------------------------------------------" << endl);
+    //trace("------------------------------------------" << endl);
     for (unsigned int i = 0; i < popSize; i++)
     {
         child[i].np = 0;
@@ -104,42 +115,85 @@ void nsga2::main()
         child[i].value.assign(dim, 0);
         child[i].fitness1 = 0.0;
         child[i].fitness2 = 0.0;
-        trace("child[" << i << "] : " << endl);
+        /*trace("child[" << i << "] : " << endl);
         trace("np = " << child[i].np << endl);
-        trace("d = " << child[i].d << endl);
+        trace("d = " << child[i].d << endl);*/
     }
-    trace("==========================================" << endl);
+    //trace("==========================================" << endl);
     for (unsigned int i = 0; i < popSize; i++)
     {
-        trace("Parent[" << i << "][j] : " << endl
-                        << "value = ");
+        //trace("Parent[" << i << "][j] : " << endl
+        //<< "value = ");
         for (unsigned int j = 0; j < dim - 1; j++)
         {
             parent[i].value.push_back(randDouble(lowerbound, upperbound));
-            trace(parent[i].value[j] << ",");
+            //trace(parent[i].value[j] << ",");
         }
         parent[i].value.push_back(randDouble(lowerbound, upperbound));
-        trace(parent[i].value[dim - 1] << endl);
+        //trace(parent[i].value[dim - 1] << endl);
     }
-    trace("==========================================" << endl);
+    //trace("==========================================" << endl);
+    /*for (unsigned int i = 0; i < popSize; i++)
+    {
+        trace("parent[" << i << "][j] : " << endl
+                        << "value = ");
+        for (unsigned int j = 0; j < dim - 1; j++)
+        {
+            trace(parent[i].value[j] << ",");
+        }
+        trace(parent[i].value[dim - 1] << endl);
+    }*/
     evaluate(parent);
+    /*for (unsigned int i = 0; i < popSize; i++)
+    {
+        trace("Parent[" << i << "][j] : " << endl);
+        trace("fitness1 = " << parent[i].fitness1 << endl);
+        trace("fitness2 = " << parent[i].fitness2 << endl);
+    }*/
     tourSelection(parent, child);
+    /*for (unsigned int i = 0; i < popSize; i++)
+    {
+        trace("child[" << i << "][j] : " << endl
+                        << "value = ");
+        for (unsigned int j = 0; j < dim - 1; j++)
+        {
+            trace(child[i].value[j] << ",");
+        }
+        trace(child[i].value[dim - 1] << endl);
+    }*/
     mutation(child);
     evaluate(child);
+    /*for (unsigned int i = 0; i < popSize; i++)
+    {
+        trace("child[" << i << "][j] : " << endl);
+        trace("fitness1 = " << child[i].fitness1 << endl);
+        trace("fitness2 = " << child[i].fitness2 << endl);
+    }*/
     unsigned int t = 0;
     while (t < iteration)
     {
         t++;
+        fastNondomSort();
         for (unsigned int i = 0; i < popSize; i++) //小孩變成父母
         {
             parent[i] = child[i];
+        }
+
+        for (unsigned int i = 0; i < popSize; i++)
+        {
+            child[i].np = 0;
+            child[i].d = 0.0;
+            child[i].Sp.clear();
+            child[i].value.assign(dim, 0);
+            child[i].fitness1 = 0.0;
+            child[i].fitness2 = 0.0;
         }
         evaluate(parent);
         tourSelection(parent, child);
         mutation(child);
         evaluate(child);
-        fastNondomSort();
     }
+    file.close();
 }
 void nsga2::evaluate(chromosome ch[])
 {
@@ -179,15 +233,29 @@ void nsga2::evaluate(chromosome ch[])
     {
         ZDT6(ch);
     }
-    trace("Calculate fitness" << endl);
-    trace("==========================================" << endl);
-    for (unsigned int i = 0; i < popSize; i++)
+    //trace("Calculate fitness" << endl);
+    //trace("==========================================" << endl);
+    /*for (unsigned int i = 0; i < popSize; i++)
     {
         trace("Parent[" << i << "][j] : " << endl);
         trace("fitness1 = " << ch[i].fitness1 << endl);
         trace("fitness2 = " << ch[i].fitness2 << endl);
+    }*/
+    //trace("==========================================" << endl);
+    for (unsigned int i = 0; i < popSize; i++)
+    {
+        final_cofitness[i] = 0.5 * ch[i].fitness1 + 0.5 * ch[i].fitness2;
+        if (final_cofitness[i] < best_fitness)
+        {
+            final_fitness[0] = ch[i].fitness1;
+            final_fitness[1] = ch[i].fitness2;
+            best_fitness = final_cofitness[i];
+            for (unsigned int j = 0; j < dim; j++)
+            {
+                best_value[j] = ch[i].value[j];
+            }
+        }
     }
-    trace("==========================================" << endl);
 }
 void nsga2::tourSelection(chromosome pa[], chromosome ch[])
 {
@@ -197,23 +265,22 @@ void nsga2::tourSelection(chromosome pa[], chromosome ch[])
     {
         ran1 = rand() % popSize;
         ran2 = rand() % popSize;
-        if (bestFit[ran1] < bestFit[ran2])
+        if (final_cofitness[ran1] < final_cofitness[ran2])
         {
             tournament[i] = ran1;
         }
-        else if (bestFit[ran1] > bestFit[ran2])
+        else if (final_cofitness[ran1] > final_cofitness[ran2])
         {
             tournament[i] = ran2;
         }
     }
-
     double rdm;
     unsigned int crossptr; //crossover pointer
     int randc1;
     int randc2;
     for (unsigned int i = 0; i < popSize / 2; i++)
     {
-        rdm = random();
+        rdm = randDouble(0, 1);
         crossptr = rand() % dim;
         randc1 = tournament[rand() % popSize];
         randc2 = tournament[rand() % popSize];
@@ -607,5 +674,8 @@ void nsga2::exe()
 {
     srand((unsigned)time(NULL));
     testFunInit();
-    main();
+    for (unsigned int i = 0; i < run; i++)
+    {
+        main();
+    }
 }

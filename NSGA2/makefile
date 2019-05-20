@@ -11,6 +11,6 @@ $(OBJS): $(SRCS)
 clean:
 	rm -rf nsga2 $(OBJS)
 run:
-	./nsga2 POL 10 10
+	./nsga2 FON 1 250
 help:
 	@echo " example: ./nsga2 [datasetName] [run] [iteration] "

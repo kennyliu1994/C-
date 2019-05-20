@@ -6,7 +6,7 @@ using namespace std;
 
 #define crossRate 0.9 //crossover rate
 #define mutRate 0.3   //mutation rate
-#define popSize 2     //number of population
+#define popSize 100   //number of population
 #define objNum 2      //number of multiobective function
 
 class chromosome
@@ -29,9 +29,12 @@ private:
     unsigned int dim;
     double upperbound;
     double lowerbound;
+    double best_fitness;
     vector<int> F[2 * popSize];
     vector<double> tournament;
-    vector<double> bestFit; 
+    vector<double> final_cofitness;
+    vector<double> final_fitness; //each population's temp fitness
+    vector<double> best_value;    //the best value
     vector<chromosome> Rt;
     vector<chromosome> sortF;
     chromosome parent[popSize];
