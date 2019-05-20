@@ -177,6 +177,7 @@ void nsga2::main()
         for (unsigned int i = 0; i < popSize; i++) //小孩變成父母
         {
             parent[i] = child[i];
+            file<< child[i].fitness1 << " " << child[i].fitness2 << endl;
         }
 
         for (unsigned int i = 0; i < popSize; i++)

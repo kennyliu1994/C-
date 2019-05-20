@@ -9,8 +9,8 @@ main: $(OBJS)
 	$(CXX) $(CXXFLAGS) -o nsga2 $(OBJS)
 $(OBJS): $(SRCS)
 clean:
-	rm -rf nsga2 $(OBJS)
+	rm -rf nsga2 $(OBJS) output.txt
 run:
-	./nsga2 FON 1 250
+	./nsga2 KUR 1 250
 help:
 	@echo " example: ./nsga2 [datasetName] [run] [iteration] "
