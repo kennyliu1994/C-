@@ -12,8 +12,9 @@ all: nsga2 run
 nsga2: $(OBJS)
 	$(CC) $(CXXFLAGS) $^ -o $@
 	#g++ -g -Wall nsga2.o lib.o -o nsga2
-$(OBJS): $(SRCS)
+%.o: %.cpp global.h rand.h
 	$(CC) $(CXXFLAGS) -c $<
-	#g++ -g -Wall -c nsga2.cpp
+run: 
+	./nsga2
 clean: 
 	rm -rf $(OBJS) 

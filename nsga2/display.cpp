@@ -4,5 +4,4 @@
 
 void display(fstream &gp, int generation)
 {
-    gp << "hi" << endl;
 }
