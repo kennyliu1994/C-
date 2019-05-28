@@ -1,8 +1,13 @@
 #ifndef _GLOBAL_H_
 #define _GLOBAL_H_
 
+#define INF 1.0e14
+#define EPS 1.0e-14
+
 #include <fstream>
 #include <vector>
+#include <stdio.h> /* printf, scanf, NULL */
+#include <stdlib.h>/* malloc, free, rand */
 using namespace std;
 
 class chromosome
@@ -17,13 +22,79 @@ public:
     int rank;
 };
 
+typedef struct lists
+{
+    int index;
+    struct lists *parent;
+    struct lists *child;
+} list;
+
 extern int popsize;
 extern int dimension;
+extern int nobj;
+extern int ngen;
+extern int nrealcross;
+extern int nrealmut;
+
 extern double lowerbound;
 extern double upperbound;
+extern double pcross_real;
+extern double pmut_real;
+extern double eta_c;
+extern double eta_m;
 
-void init_parent(chromosome[]);
+void allocate_memory(chromosome pop[], int size);
+;
 
-void display(fstream &gp, int generation);
+void initialize_pop(chromosome pop[]);
+
+void assign_rank_and_crowding_distance(chromosome pop[]);
+
+void assign_crowding_distance_list(chromosome pop[], list *lst, int front_size);
+void assign_crowding_distance(chromosome pop[], int *dist, int **obj_array, int front_size);
+void assign_crowding_distance_indices(chromosome pop[], int c1, int c2);
+
+void insert(list *node, int x);
+list *del(list *node);
+
+int check_dominance(chromosome a, chromosome b);
+
+void quicksort_front_obj(chromosome pop[], int objcount, int obj_array[], int obj_array_size);
+void q_sort_front_obj(chromosome pop[], int objcount, int obj_array[], int left, int right);
+void quicksort_dist(chromosome pop[], int *dist, int front_size);
+void q_sort_dist(chromosome pop[], int *dist, int left, int right);
+
+void evaluate_pop(chromosome pop[], string);
+
+void report_pop(chromosome pop[], fstream &fs);
+void report_feasible(chromosome pop[], fstream &fs);
+
+void display(chromosome pop[], FILE *gp, int generation);
+void display_png(chromosome pop[], fstream &fs);
+
+void selection(chromosome old_pop[], chromosome new_pop[]);
+chromosome tournament(chromosome ind1, chromosome ind2);
+
+void crossover(chromosome parent1, chromosome parent2, chromosome &child1, chromosome &child2);
+
+void mutation_pop(chromosome pop[]);
+
+void merge(chromosome pop1[], chromosome pop2[], chromosome pop3[]);
+void copy_ind(chromosome ind1, chromosome &ind2);
+
+void fill_nondominated_sort(chromosome mixed_pop[], chromosome new_pop[]);
+void crowding_fill(chromosome mixed_pop[], chromosome new_pop[], int count, int front_size, list *elite);
+
+void sch1(vector<double> &value, vector<double> &fitness);
+void sch2(vector<double> &value, vector<double> &fitness);
+void fon(vector<double> &value, vector<double> &fitness);
+void kur(vector<double> &value, vector<double> &fitness);
+void pol(vector<double> &value, vector<double> &fitness);
+void vnt(vector<double> &value, vector<double> &fitness);
+void zdt1(vector<double> &value, vector<double> &fitness);
+void zdt2(vector<double> &value, vector<double> &fitness);
+void zdt3(vector<double> &value, vector<double> &fitness);
+void zdt4(vector<double> &value, vector<double> &fitness);
+void zdt6(vector<double> &value, vector<double> &fitness);
 
 #endif

@@ -3,6 +3,7 @@
 
 #include <stdlib.h>
 
-double randDouble(double lower, double upper);
+double rand_double(double lower, double upper);
+int rand_int(const int lower, const int upper);
 
 #endif

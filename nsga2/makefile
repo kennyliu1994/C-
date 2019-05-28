@@ -8,13 +8,11 @@ OBJS = $(SRCS:.cpp=.o)
 .SUFFIXS: .c .cpp .o
 .PHONY: all clean run
 
-all: nsga2 run
+all: nsga2
 nsga2: $(OBJS)
 	$(CC) $(CXXFLAGS) $^ -o $@
 	#g++ -g -Wall nsga2.o lib.o -o nsga2
 %.o: %.cpp global.h rand.h
 	$(CC) $(CXXFLAGS) -c $<
-run: 
-	./nsga2
 clean: 
 	rm -rf $(OBJS) 
