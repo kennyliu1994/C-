@@ -36,15 +36,16 @@ extern int ngen;
 extern int nrealcross;
 extern int nrealmut;
 
-extern double lowerbound;
-extern double upperbound;
+extern vector<double> lowerbound;
+extern vector<double> upperbound;
 extern double pcross_real;
 extern double pmut_real;
 extern double eta_c;
 extern double eta_m;
 
+extern string s;
+
 void allocate_memory(chromosome pop[], int size);
-;
 
 void initialize_pop(chromosome pop[]);
 
@@ -70,7 +71,6 @@ void report_pop(chromosome pop[], fstream &fs);
 void report_feasible(chromosome pop[], fstream &fs);
 
 void display(chromosome pop[], FILE *gp, int generation);
-void display_png(chromosome pop[], fstream &fs);
 
 void selection(chromosome old_pop[], chromosome new_pop[]);
 chromosome tournament(chromosome ind1, chromosome ind2);

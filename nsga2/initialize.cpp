@@ -9,7 +9,7 @@ void initialize_pop(chromosome pop[])
     {
         for (int j = 0; j < dimension; j++)
         {
-            pop[i].value[j] = rand_double(lowerbound, upperbound);
+            pop[i].value[j] = rand_double(lowerbound[j], upperbound[j]);
         }
     }
 }

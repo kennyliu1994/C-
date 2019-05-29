@@ -1,3 +1,20 @@
-
-Number of crossover of real variable = 17940
-Number of mutation of real variable = 39457
+Number of population size = 100
+Number of generations = 400
+Number of objectives = 2
+Number of dimensions = 10
+min and max bounds = 0 1
+min and max bounds = 0 1
+min and max bounds = 0 1
+min and max bounds = 0 1
+min and max bounds = 0 1
+min and max bounds = 0 1
+min and max bounds = 0 1
+min and max bounds = 0 1
+min and max bounds = 0 1
+min and max bounds = 0 1
+Probability of crossover = 0.9
+Probability of mutation = 0.1
+Value of distribution index for crossover = 15
+Value of distribution index for mutation = 20
+Number of crossover of real variable = 17998
+Number of mutation of real variable = 39782

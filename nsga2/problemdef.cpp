@@ -1,4 +1,5 @@
 #include <math.h>
+#include <iostream>
 
 #include "global.h"
 
@@ -264,7 +265,7 @@ void zdt4(vector<double> &value, vector<double> &fitness)
     for (i = 1; i < 10; i++)
     {
         g += value[i] * value[i] - 10.0 * cos(4.0 * M_PI * value[i]);
-    }
+    }    
     g += 91.0;
     h = 1.0 - sqrt(f1 / g);
     f2 = g * h;

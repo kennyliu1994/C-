@@ -30,8 +30,8 @@ void crossover(chromosome parent1, chromosome parent2, chromosome &child1, chrom
                         y1 = parent2.value[i];
                         y2 = parent1.value[i];
                     }
-                    yl = lowerbound;
-                    yu = upperbound;
+                    yl = lowerbound[i];
+                    yu = upperbound[i];
                     rand = rand_double(0, 1);
                     beta = 1.0 + (2.0 * (y1 - yl) / (y2 - y1));
                     alpha = 2.0 - pow(beta, -(eta_c + 1.0));
@@ -94,5 +94,5 @@ void crossover(chromosome parent1, chromosome parent2, chromosome &child1, chrom
             child1.value[i] = parent1.value[i];
             child2.value[i] = parent2.value[i];
         }
-    }    
+    }
 }

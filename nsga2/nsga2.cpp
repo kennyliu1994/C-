@@ -7,14 +7,15 @@ int popsize;
 int ngen;
 int nobj;
 int dimension;
-double lowerbound;
-double upperbound;
+vector<double> lowerbound;
+vector<double> upperbound;
 double pcross_real;
 double pmut_real;
 double eta_c;
 double eta_m;
 int nrealcross;
 int nrealmut;
+string s;
 
 int main(int argc, char **argv)
 {
@@ -25,13 +26,32 @@ int main(int argc, char **argv)
     fstream fs4;
     fstream fs5;
     FILE *gp;
-    string s = argv[1];
+    s = argv[1];
     fs1.open("initial_pop.out", ios::out); //write
     fs2.open("final_pop.out", ios::out);   //write
     fs3.open("best_pop.out", ios::out);    //write
     fs4.open("all_pop.out", ios::out);     //write
     fs5.open("params.out", ios::out);      //write
-    cin >> popsize >> ngen >> nobj >> dimension >> lowerbound >> upperbound >> pcross_real >> pmut_real >> eta_c >> eta_m;
+    cin >> popsize >> ngen >> nobj >> dimension;
+    fs5 << "Number of population size = " << popsize << endl;
+    fs5 << "Number of generations = " << ngen << endl;
+    fs5 << "Number of objectives = " << nobj << endl;
+    fs5 << "Number of dimensions = " << dimension << endl;
+    for (int i = 0; i < dimension; i++)
+    {
+        lowerbound.assign(dimension, 0);
+        upperbound.assign(dimension, 0);
+    }
+    for (int i = 0; i < dimension; i++)
+    {
+        cin >> lowerbound[i] >> upperbound[i];
+        fs5 << "min and max bounds = " << lowerbound[i] << " " << upperbound[i] << endl;
+    }
+    cin >> pcross_real >> pmut_real >> eta_c >> eta_m;
+    fs5 << "Probability of crossover = " << pcross_real << endl;
+    fs5 << "Probability of mutation = " << pmut_real << endl;
+    fs5 << "Value of distribution index for crossover = " << eta_c << endl;
+    fs5 << "Value of distribution index for mutation = " << eta_m << endl;
     gp = popen("gnuplot -persist", "w");
     nrealcross = 0;
     nrealmut = 0;
@@ -66,10 +86,8 @@ int main(int argc, char **argv)
     report_feasible(parent_pop, fs3);
     if (dimension != 0)
     {
-        fs5 << endl
-            << "Number of crossover of real variable = " << nrealcross;
-        fs5 << endl
-            << "Number of mutation of real variable = " << nrealmut;
+        fs5 << "Number of crossover of real variable = " << nrealcross << endl;
+        fs5 << "Number of mutation of real variable = " << nrealmut << endl;
     }
     fs1.close();
     fs2.close();

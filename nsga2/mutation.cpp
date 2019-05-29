@@ -16,8 +16,8 @@ void mutation_pop(chromosome pop[])
             if (rand_double(0, 1) <= pmut_real)
             {
                 y = pop[i].value[j];
-                yl = lowerbound;
-                yu = upperbound;
+                yl = lowerbound[j];
+                yu = upperbound[j];
                 delta1 = (y - yl) / (yu - yl);
                 delta2 = (yu - y) / (yu - yl);
                 rnd = rand_double(0, 1);

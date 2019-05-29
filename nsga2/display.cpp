@@ -10,8 +10,8 @@ void display(chromosome pop[], FILE *gp, int generation)
     {
         fs << pop[i].fitness[0] << " " << pop[i].fitness[1] << endl;
     }
-    fprintf(gp, "reset\n"
-                "set title 'Generation #%d'\n"
+    fprintf(gp, "set title 'Generation #%d'\n"
+                "unset key\n"
                 "set xlabel 'f1'\n"
                 "set ylabel 'f2'\n"
                 "plot 'plot.out'\n",
