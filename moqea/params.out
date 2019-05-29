@@ -1,0 +1,10 @@
+Number of population size = 48
+Number of generations = 500
+Number of objectives = 2
+Number of dimensions = 1
+min and max bounds = -1000 1000
+Probability of crossover = 0.9
+Probability of mutation = 0.5
+Value of distribution index for crossover = 5
+Value of distribution index for mutation = 10
+Number of binary variables = 10
