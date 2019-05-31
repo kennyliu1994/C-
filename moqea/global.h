@@ -39,6 +39,6 @@ extern string s;
 
 void allocate_memory(chromosome pop[], int size);
 
-void initialize_pop(chromosome pop[])
+void initialize_pop(chromosome pop[]);
 
 #endif

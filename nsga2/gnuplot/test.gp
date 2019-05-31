@@ -5,4 +5,4 @@ set title ARG1
 set term png enhanced font 'Verdana,10'
 set key left bottom
 set output ARG2
-plot [:][:] ARG3
+plot ARG3

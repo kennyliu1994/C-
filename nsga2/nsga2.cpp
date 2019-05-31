@@ -67,7 +67,7 @@ int main(int argc, char **argv)
     report_pop(parent_pop, fs1);
     fs4 << "# gen = 1" << endl;
     report_pop(parent_pop, fs4);
-    display(parent_pop, gp, 1);
+    //display(parent_pop, gp, 1);
     for (int i = 2; i <= ngen; i++)
     {
         selection(parent_pop, child_pop);
@@ -77,7 +77,7 @@ int main(int argc, char **argv)
         fill_nondominated_sort(mixed_pop, parent_pop);
         fs4 << "# gen = " << i << endl;
         report_pop(parent_pop, fs4);
-        display(parent_pop, gp, i);
+        //display(parent_pop, gp, i);
     }
     for (int i = 0; i < popsize; i++)
     {

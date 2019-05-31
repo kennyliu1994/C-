@@ -16,5 +16,5 @@ Probability of crossover = 0.9
 Probability of mutation = 0.1
 Value of distribution index for crossover = 15
 Value of distribution index for mutation = 20
-Number of crossover of real variable = 17998
-Number of mutation of real variable = 39782
+Number of crossover of real variable = 17979
+Number of mutation of real variable = 39958
