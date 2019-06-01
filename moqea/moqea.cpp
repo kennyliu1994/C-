@@ -1,5 +1,6 @@
 #include <time.h>
 #include "iostream"
+#include <fstream>
 
 #include "global.h"
 
@@ -7,7 +8,7 @@ int popsize;
 int ngen;
 int nobj;
 int dimension;
-int nbin = 1;
+int nbit = 5;
 vector<double> lowerbound;
 vector<double> upperbound;
 double pcross_real;
@@ -28,11 +29,11 @@ int main(int argc, char **argv)
     fstream fs5;
     FILE *gp;
     s = argv[1];
-    fs1.open("initial_pop.out", ios::out); //write
-    fs2.open("final_pop.out", ios::out);   //write
-    fs3.open("best_pop.out", ios::out);    //write
-    fs4.open("all_pop.out", ios::out);     //write
-    fs5.open("params.out", ios::out);      //write
+    fs1.open("initial_pop.out", ios::out);
+    fs2.open("final_pop.out", ios::out);
+    fs3.open("best_pop.out", ios::out);
+    fs4.open("all_pop.out", ios::out);
+    fs5.open("params.out", ios::out);
     cin >> popsize >> ngen >> nobj >> dimension;
     fs5 << "Number of population size = " << popsize << endl;
     fs5 << "Number of generations = " << ngen << endl;
@@ -62,11 +63,45 @@ int main(int argc, char **argv)
     allocate_memory(child_pop, popsize);
     allocate_memory(mixed_pop, 2 * popsize);
     initialize_pop(parent_pop);
-
+    make(parent_pop);
+    cout << "Initialization done, now performing first generation" << endl;
+    decode_pop(parent_pop);
+    evaluate_pop(parent_pop, s);
+    assign_rank_and_crowding_distance(parent_pop);
+    report_pop(parent_pop, fs1);
+    fs4 << "# gen = 1" << endl
+        << "------------------------------------------------" << endl;
+    report_pop(parent_pop, fs4);
+    cout << " gen = 1" << endl;
+    //display(parent_pop, gp, 1);
+    for (int i = 2; i <= ngen; i++)
+    {
+        //selection(parent_pop, child_pop);
+        //mutation_pop(child_pop);
+        evaluate_pop(child_pop, s);
+        merge(parent_pop, child_pop, mixed_pop);
+        fill_nondominated_sort(mixed_pop, parent_pop);
+        fs4 << "# gen = " << i << endl;
+        report_pop(parent_pop, fs4);
+        cout << " gen = " << i << endl;
+        //display(parent_pop, gp, i);
+    }
+    cout << " Generations finished, now reporting solutions " << endl;
+    for (int i = 0; i < popsize; i++)
+    {
+        fs2 << parent_pop[i].fitness[0] << " " << parent_pop[i].fitness[1] << endl;
+    }
+    report_feasible(parent_pop, fs3);
+    if (dimension != 0)
+    {
+        fs5 << "Number of crossover of real variable = " << nrealcross << endl;
+        fs5 << "Number of mutation of real variable = " << nrealmut << endl;
+    }
     fs1.close();
     fs2.close();
     fs3.close();
     fs4.close();
     fs5.close();
     pclose(gp);
+    cout << " Routine successfully exited " << endl;
 }

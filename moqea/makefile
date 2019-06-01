@@ -11,7 +11,7 @@ OBJS = $(SRCS:.cpp=.o)
 all: moqea
 moqea: $(OBJS)
 	$(CC) $(CXXFLAGS) $^ -o $@
-	#g++ -g -Wall moqea.o lib.o -o moqea
+	#g++ -g -Wall %.o -o moqea
 %.o: %.cpp global.h rand.h
 	$(CC) $(CXXFLAGS) -c $<
 clean: 

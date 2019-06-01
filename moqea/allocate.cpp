@@ -8,9 +8,12 @@ void allocate_memory(chromosome pop[], int size)
     {
         pop[i].value.assign(dimension, 0);
         pop[i].fitness.assign(nobj, 0);
+        pop[i].alpha.resize(dimension);
+        pop[i].beta.resize(dimension);
+        pop[i].gene.resize(dimension);
         for (int j = 0; j < dimension; j++)
         {
-            pop[i].gene[j].assign(nbin, 0);
+            pop[i].gene[j].assign(nbit, 0);
         }
     }
 }
