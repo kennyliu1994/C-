@@ -2,6 +2,7 @@
 #define _GLOBAL_H_
 
 #define INF 1.0e14
+#define EPS 1.0e-14 //nsga2
 
 #include <stdlib.h>
 #include <stdio.h> /* printf, scanf, NULL */
@@ -12,8 +13,8 @@ using namespace std;
 class chromosome
 {
 public:
-    vector<vector<double> >alpha;
-    vector<vector<double> >beta;
+    vector<vector<double> > alpha;
+    vector<vector<double> > beta;
     vector<vector<int> > gene;
     vector<double> value;
     vector<double> Sp;
@@ -59,8 +60,9 @@ void report_feasible(chromosome pop[], fstream &fs);
 
 void evaluate_pop(chromosome pop[], string);
 
-void make(chromosome pop[]);
+void make(chromosome pop[], chromosome new_pop[]);
 void update(chromosome pop[]);
+double lookup(int x, int b, int domi);
 
 void assign_rank_and_crowding_distance(chromosome new_pop[]);
 
@@ -83,6 +85,11 @@ void copy_ind(chromosome ind1, chromosome &ind2);
 
 void fill_nondominated_sort(chromosome mixed_pop[], chromosome new_pop[]);
 void crowding_fill(chromosome mixed_pop[], chromosome new_pop[], int count, int front_size, list *elite);
+
+void selection(chromosome old_pop[], chromosome new_pop[]);
+chromosome tournament(chromosome ind1, chromosome ind2);
+void mutation_pop(chromosome pop[]);
+void crossover(chromosome parent1, chromosome parent2, chromosome &child1, chromosome &child2);
 
 void display(chromosome pop[], FILE *gp, int generation);
 

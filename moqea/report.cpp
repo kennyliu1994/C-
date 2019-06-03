@@ -13,7 +13,7 @@ void report_pop(chromosome pop[], fstream &fs)
         {
             for (int k = 0; k < nbit; k++)
             {
-                fs << pop[i].alpha[j][k];
+                fs << pop[i].alpha[j][k] << " ";
             }
             fs << " ";
         }
@@ -23,7 +23,7 @@ void report_pop(chromosome pop[], fstream &fs)
         {
             for (int k = 0; k < nbit; k++)
             {
-                fs << pop[i].beta[j][k];
+                fs << pop[i].beta[j][k] << " ";
             }
             fs << " ";
         }

@@ -8,7 +8,7 @@ int popsize;
 int ngen;
 int nobj;
 int dimension;
-int nbit = 5;
+int nbit = 10;
 vector<double> lowerbound;
 vector<double> upperbound;
 double pcross_real;
@@ -63,27 +63,31 @@ int main(int argc, char **argv)
     allocate_memory(child_pop, popsize);
     allocate_memory(mixed_pop, 2 * popsize);
     initialize_pop(parent_pop);
-    make(parent_pop);
-    cout << "Initialization done, now performing first generation" << endl;
+    make(parent_pop, parent_pop);
     decode_pop(parent_pop);
+    cout << "Initialization done, now performing first generation" << endl;
     evaluate_pop(parent_pop, s);
     assign_rank_and_crowding_distance(parent_pop);
     report_pop(parent_pop, fs1);
     fs4 << "# gen = 1" << endl
         << "------------------------------------------------" << endl;
     report_pop(parent_pop, fs4);
-    cout << " gen = 1" << endl;
+    //cout << " gen = 1" << endl;
     //display(parent_pop, gp, 1);
     for (int i = 2; i <= ngen; i++)
     {
-        //selection(parent_pop, child_pop);
-        //mutation_pop(child_pop);
+        make(parent_pop, child_pop);
+        decode_pop(child_pop);
+        //selection(parent_pop, child_pop);//nsga2
+        //mutation_pop(child_pop);//nsga2
         evaluate_pop(child_pop, s);
+        //report_pop(child_pop, fs1);
         merge(parent_pop, child_pop, mixed_pop);
-        fill_nondominated_sort(mixed_pop, parent_pop);
+        fill_nondominated_sort(mixed_pop, parent_pop);        
+        update(parent_pop);
         fs4 << "# gen = " << i << endl;
         report_pop(parent_pop, fs4);
-        cout << " gen = " << i << endl;
+        //cout << " gen = " << i << endl;
         //display(parent_pop, gp, i);
     }
     cout << " Generations finished, now reporting solutions " << endl;
