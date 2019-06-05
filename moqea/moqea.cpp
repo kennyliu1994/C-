@@ -58,9 +58,11 @@ int main(int argc, char **argv)
     gp = popen("gnuplot -persist", "w");
     chromosome parent_pop[popsize];
     chromosome child_pop[popsize];
+    chromosome archived_pop[popsize];
     chromosome mixed_pop[2 * popsize];
     allocate_memory(parent_pop, popsize);
     allocate_memory(child_pop, popsize);
+    allocate_memory(archived_pop, popsize);
     allocate_memory(mixed_pop, 2 * popsize);
     initialize_pop(parent_pop);
     make(parent_pop, parent_pop);
@@ -68,27 +70,58 @@ int main(int argc, char **argv)
     cout << "Initialization done, now performing first generation" << endl;
     evaluate_pop(parent_pop, s);
     assign_rank_and_crowding_distance(parent_pop);
-    report_pop(parent_pop, fs1);
-    fs4 << "# gen = 1" << endl
-        << "------------------------------------------------" << endl;
-    report_pop(parent_pop, fs4);
+    //report_pop(parent_pop, fs1);
+    //fs4 << "# gen = 1" << endl
+    //<< "------------------------------------------------" << endl;
+    //report_pop(parent_pop, fs4);
     //cout << " gen = 1" << endl;
     //display(parent_pop, gp, 1);
     for (int i = 2; i <= ngen; i++)
     {
         make(parent_pop, child_pop);
+        fs1<<"make"<<endl;
+        /*report_pop(parent_pop, fs1);
+        report_pop(child_pop, fs1);*/
         decode_pop(child_pop);
+        /*report_pop(parent_pop, fs1);
+        report_pop(child_pop, fs1);*/
         //selection(parent_pop, child_pop);//nsga2
         //mutation_pop(child_pop);//nsga2
         evaluate_pop(child_pop, s);
         //report_pop(child_pop, fs1);
+        /*report_pop(parent_pop, fs1);
+        report_pop(child_pop, fs1);*/
         merge(parent_pop, child_pop, mixed_pop);
-        fill_nondominated_sort(mixed_pop, parent_pop);        
-        update(parent_pop);
-        fs4 << "# gen = " << i << endl;
-        report_pop(parent_pop, fs4);
-        //cout << " gen = " << i << endl;
+        /*report_pop(parent_pop, fs1);
+        report_pop(child_pop, fs1);*/
+        fill_nondominated_sort(mixed_pop, parent_pop);
+        /*report_pop(parent_pop, fs1);
+        report_pop(child_pop, fs1);*/
+        if (i == 2)
+        {
+            for (int j = 0; j < popsize; j++)
+            {
+                archived_pop[j] = parent_pop[j];
+            }
+            //report_pop(parent_pop, fs1);
+        }
+        update(parent_pop, archived_pop);
+        if (i != 2)
+        {
+            for (int j = 0; j < popsize; j++)
+            {
+                archived_pop[j] = parent_pop[j];
+            }
+            //report_pop(parent_pop, fs1);
+        }
+        //fs4 << "# gen = " << i << endl;
+        //report_pop(parent_pop, fs4);
+        cout << " gen = " << i << endl;
         //display(parent_pop, gp, i);
+        /*for (int i = 0; i < popsize; i++)
+        {
+            fs2 << parent_pop[i].fitness[0] << " " << parent_pop[i].fitness[1] << endl;
+        }*/
     }
     cout << " Generations finished, now reporting solutions " << endl;
     for (int i = 0; i < popsize; i++)

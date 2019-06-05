@@ -61,7 +61,7 @@ void report_feasible(chromosome pop[], fstream &fs);
 void evaluate_pop(chromosome pop[], string);
 
 void make(chromosome pop[], chromosome new_pop[]);
-void update(chromosome pop[]);
+void update(chromosome pop[], chromosome archived[]);
 double lookup(int x, int b, int domi);
 
 void assign_rank_and_crowding_distance(chromosome new_pop[]);

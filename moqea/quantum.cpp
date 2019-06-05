@@ -8,7 +8,8 @@ void make(chromosome pop[], chromosome new_pop[])
 {
     for (int i = 0; i < popsize; i++)
     {
-        new_pop[i] = pop[i];
+        new_pop[i].alpha = pop[i].alpha;
+        new_pop[i].beta = pop[i].beta;
     }
     for (int i = 0; i < popsize; i++)
     {
@@ -29,32 +30,22 @@ void make(chromosome pop[], chromosome new_pop[])
     }
 }
 
-void update(chromosome pop[])
+void update(chromosome pop[], chromosome archived[])
 {
     double theta;
-    chromosome best;
-    for (int i = 0; i < popsize; i++)
-    {
-        if (pop[i].rank == 1)
-        {
-            if (pop[i].crowd_dist == INF)
-            {
-                best = pop[i];
-                break;
-            }
-        }
-    }
     for (int i = 0; i < popsize; i++)
     {
         for (int j = 0; j < dimension; j++)
         {
             for (int k = 0; k < nbit; k++)
             {
-                theta = lookup(pop[i].gene[j][k], best.gene[j][k], check_dominance(pop[i], best));
+                theta = lookup(pop[i].gene[j][k], archived[i].gene[j][k], check_dominance(pop[i], archived[i]));
                 if (pop[i].alpha[j][k] * pop[i].beta[j][k] < 0)
                     theta = -theta;
                 pop[i].alpha[j][k] = cos(theta) * pop[i].alpha[j][k] - sin(theta) * pop[i].beta[j][k];
                 pop[i].beta[j][k] = sin(theta) * pop[i].alpha[j][k] + cos(theta) * pop[i].beta[j][k];
+                //cerr<<pop[i].alpha[j][k]<<endl;
+                //cerr<<pop[i].gene[j][k]<<" "<<archived[i].gene[j][k]<<endl;
             }
         }
     }
@@ -62,28 +53,33 @@ void update(chromosome pop[])
 
 double lookup(int x, int b, int domi)
 {
+    //cerr << x << b << domi <<endl;
     if (x == 0)
     {
         if (b == 0)
         {
             if (domi == -1) //theta1
             {
-                return 0;
+                //cerr << "theta 1" << endl;
+                return 0 * M_PI;
             }
             else //theta2
             {
-                return 0;
+                //cerr << "theta 2" << endl;
+                return 0 * M_PI;
             }
         }
         else
         {
             if (domi == -1) //theta3
             {
-                return 0.005 * M_PI;
+                //cerr << "theta 3" << endl;
+                return 0 * M_PI;
             }
             else //theta4
             {
-                return 0;
+                //cerr << "theta 4" << endl;
+                return 0.01 * M_PI;
             }
         }
     }
@@ -93,22 +89,26 @@ double lookup(int x, int b, int domi)
         {
             if (domi == -1) //theta5
             {
-                return -0.005 * M_PI;
+                //cerr << "theta 5" << endl;
+                return 0 * M_PI;
             }
             else //theta6
             {
-                return 0;
+                //cerr << "theta 6" << endl;
+                return -0.01 * M_PI;
             }
         }
         else
         {
             if (domi == -1) //theta7
             {
-                return 0;
+                //cerr << "theta 7" << endl;
+                return 0 * M_PI;
             }
             else //theta8
             {
-                return 0;
+                //cerr << "theta 8" << endl;
+                return 0 * M_PI;
             }
         }
     }
