@@ -2,6 +2,7 @@
 
 #include "global.h"
 
+//evaluate value to fitness
 void evaluate_pop(chromosome pop[], string s)
 {
     for (int i = 0; i < popsize; i++)

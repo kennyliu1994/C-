@@ -4,6 +4,7 @@
 #include "global.h"
 #include "rand.h"
 
+//set alpha and beta as 1/sqrt(2) initially
 void initialize_pop(chromosome pop[])
 {
     for (int i = 0; i < popsize; i++)
@@ -14,7 +15,7 @@ void initialize_pop(chromosome pop[])
             for (int k = 0; k < nbit; k++)
             {
                 pop[i].alpha[j].assign(nbit, 1 / sqrt(2));
-                pop[i].beta[j].assign(nbit, 1 / sqrt(2));                
+                pop[i].beta[j].assign(nbit, 1 / sqrt(2));
             }
         }
     }

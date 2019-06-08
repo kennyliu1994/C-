@@ -3,6 +3,7 @@
 
 #include "global.h"
 
+// decode gene to value
 void decode_pop(chromosome pop[])
 {
     int sum;

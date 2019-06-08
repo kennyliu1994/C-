@@ -16,7 +16,7 @@ void merge(chromosome pop1[], chromosome pop2[], chromosome pop3[])
 }
 void copy_ind(chromosome ind1, chromosome &ind2)
 {
-    int i;
+    int i, j;
     ind2.rank = ind1.rank;
     ind2.crowd_dist = ind1.crowd_dist;
     if (dimension != 0)
@@ -24,6 +24,12 @@ void copy_ind(chromosome ind1, chromosome &ind2)
         for (i = 0; i < dimension; i++)
         {
             ind2.value[i] = ind1.value[i];
+            for (j = 0; j < nbit; j++)
+            {
+                ind2.alpha[i][j] = ind1.alpha[i][j];
+                ind2.beta[i][j] = ind1.beta[i][j];
+                ind2.gene[i][j] = ind1.gene[i][j];
+            }
         }
     }
     for (i = 0; i < nobj; i++)

@@ -17,8 +17,8 @@ public:
     vector<vector<double> > beta;
     vector<vector<int> > gene;
     vector<double> value;
-    vector<double> Sp;
     vector<double> fitness;
+    vector<double> Sp;
     double crowd_dist;
     int np;
     int index;
@@ -61,8 +61,8 @@ void report_feasible(chromosome pop[], fstream &fs);
 void evaluate_pop(chromosome pop[], string);
 
 void make(chromosome pop[], chromosome new_pop[]);
-void update(chromosome pop[], chromosome archived[]);
-double lookup(int x, int b, int domi);
+void update(chromosome pop[], chromosome best[], int generation);
+void lookup(chromosome &x, chromosome b, int domi, int sch, string ampl, int g);
 
 void assign_rank_and_crowding_distance(chromosome new_pop[]);
 
@@ -92,6 +92,12 @@ void mutation_pop(chromosome pop[]);
 void crossover(chromosome parent1, chromosome parent2, chromosome &child1, chromosome &child2);
 
 void display(chromosome pop[], FILE *gp, int generation);
+
+void SSAA_sch1(chromosome &x, chromosome b, int domi);
+void MSAA_sch1(chromosome &x, chromosome b, int domi);
+void GDAA_sch1_Xu_Wang(chromosome &x, chromosome b, int domi, int g);
+void GDAA_sch2_Xu_Wang(chromosome &x, chromosome b, int domi,int g);
+void GDAA_sch2_Ji(chromosome &x, chromosome b, int domi, int g);
 
 void sch1(vector<double> &value, vector<double> &fitness);
 void sch2(vector<double> &value, vector<double> &fitness);
