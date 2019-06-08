@@ -30,7 +30,7 @@ void make(chromosome pop[], chromosome new_pop[])
 
 void update(chromosome pop[], chromosome best[], int generation)
 {
-    int sch = 1;                  //rotation scheme
+    int sch = 1;          //rotation scheme
     string ampl = "MSAA"; //rotation angle amplitude
     for (int i = 0; i < popsize; i++)
     {
@@ -40,10 +40,12 @@ void update(chromosome pop[], chromosome best[], int generation)
 
 void lookup(chromosome &x, chromosome b, int domi, int sch, string ampl, int g)
 {
+    if (sch == 0 && ampl == "test")
+        test(x, b, domi, g);
     if (sch == 1 && ampl == "SSAA")
         SSAA_sch1(x, b, domi);
     if (sch == 1 && ampl == "MSAA")
-        MSAA_sch1(x, b, domi);
+        MSAA_sch1(x, b, domi, g);
     if (sch == 1 && ampl == "GDAA_Xu_Wang")
         GDAA_sch1_Xu_Wang(x, b, domi, g);
     if (sch == 2 && ampl == "GDAA_Xu_Wang")

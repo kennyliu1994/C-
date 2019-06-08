@@ -4,6 +4,25 @@
 #include "global.h"
 #include "rand.h"
 
+void test(chromosome &x, chromosome b, int domi, int g)
+{
+    double theta;
+    double delta_theta;
+    delta_theta = (1 + g / ngen) * 0.002;
+    int sign = 1;
+    theta = sign * delta_theta;
+    for (int j = 0; j < dimension; j++)
+    {
+        for (int k = 0; k < nbit; k++)
+        {
+            x.alpha[j][k] = cos(theta) * x.alpha[j][k] - sin(theta) * x.beta[j][k];
+            x.beta[j][k] = sin(theta) * x.alpha[j][k] + cos(theta) * x.beta[j][k];
+            //cerr<<x.alpha[j][k]<<endl;
+            //cerr<<x.gene[j][k]<<" "<<best.gene[j][k]<<endl;
+        }
+    }
+}
+
 void SSAA_sch1(chromosome &x, chromosome b, int domi)
 {
     double array[] = {0, 0, 0.01, 0, 0.01, 0, 0, 0};
@@ -184,11 +203,11 @@ void SSAA_sch1(chromosome &x, chromosome b, int domi)
     }
 }
 
-void MSAA_sch1(chromosome &x, chromosome b, int domi)
+void MSAA_sch1(chromosome &x, chromosome b, int domi, int g)
 {
     //double array[] = {0, 0, 0, 0.05, 0.01, 0.025, 0.005, 0.025};
-    //double array[] = {0.02, 0.04, 0.01, 0.02, 0.01, 0.02, 0, 0.01};
-    double array[] = {0, 0, 0, 0.05, 0.01, 0.025, 0.005, 0.025};
+    double array[] = {0.02, 0.04, 0.01, 0.02, 0.01, 0.02, 0, 0.01};
+    //double array[] = {0, 0, 0, 0.05, 0.01, 0.025, 0.005, 0.025};
     vector<double> theta_set(array, array + 8);
     double theta;
     double delta_theta;

@@ -15,7 +15,7 @@ moqea: $(OBJS)
 %.o: %.cpp global.h rand.h
 	$(CC) $(CXXFLAGS) -c $<
 test:
-	./moqea kur <./gnuplot/kur.in
-	gnuplot -c gnuplot/test.gp kur gnuplot/kur.png final_pop.out
+	./moqea fon <./gnuplot/fon.in
+	gnuplot -c gnuplot/test.gp fon gnuplot/fon.png final_pop.out
 clean: 
 	rm -rf $(OBJS) 

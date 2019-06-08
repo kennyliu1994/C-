@@ -8,7 +8,7 @@ int popsize;
 int ngen;
 int nobj;
 int dimension;
-int nbit = 10;
+int nbit = 15;
 vector<double> lowerbound;
 vector<double> upperbound;
 double pcross_real;
@@ -18,6 +18,7 @@ double eta_m;
 int nrealcross;
 int nrealmut;
 string s;
+int archive_used; //store pointer used
 
 int main(int argc, char **argv)
 {
@@ -58,19 +59,23 @@ int main(int argc, char **argv)
     gp = popen("gnuplot -persist", "w");
     chromosome parent_pop[popsize];
     chromosome child_pop[popsize];
-    chromosome best_pop[popsize];      //store for update
+    chromosome best_pop[popsize];
     chromosome mixed_pop[2 * popsize]; //mix for non-domi sort
     allocate_memory(parent_pop, popsize);
     allocate_memory(child_pop, popsize);
     allocate_memory(best_pop, popsize);
     allocate_memory(mixed_pop, 2 * popsize);
-    initialize_pop(parent_pop);
-    make(parent_pop, parent_pop);
+    initialize_pop(parent_pop);   //initialize Q(0)
+    make(parent_pop, parent_pop); //make P(0)
     decode_pop(parent_pop);
     //cout << "Initialization done, now performing first generation" << endl;
     evaluate_pop(parent_pop, s);
     //cout << "Initialization done, now performing first generation" << endl;
     assign_rank_and_crowding_distance(parent_pop);
+    for (int j = 0; j < popsize; j++)
+    {
+        best_pop[j] = parent_pop[j];
+    }
     //report_pop(parent_pop, fs1);
     //fs4 << "# gen = 1" << endl
     //<< "------------------------------------------------" << endl;
@@ -79,12 +84,10 @@ int main(int argc, char **argv)
     //display(parent_pop, gp, 1);
     for (int i = 2; i <= ngen; i++)
     {
-        make(parent_pop, child_pop);
+        make(parent_pop, child_pop); //make P(1)
         decode_pop(child_pop);
-        //selection(parent_pop, child_pop);//nsga2
-        //mutation_pop(child_pop);//nsga2
         evaluate_pop(child_pop, s);
-        merge(parent_pop, child_pop, mixed_pop);
+        merge(best_pop, child_pop, mixed_pop);
         fill_nondominated_sort(mixed_pop, parent_pop);
         if (i == 2)
         {
@@ -94,7 +97,6 @@ int main(int argc, char **argv)
             }
         }
         update(parent_pop, best_pop, i);
-        //report_pop(parent_pop, fs1);
         if (i != 2)
         {
             for (int j = 0; j < popsize; j++)
@@ -102,6 +104,8 @@ int main(int argc, char **argv)
                 best_pop[j] = parent_pop[j];
             }
         }
+        //report_pop(parent_pop, fs1);
+        //report_pop(parent_pop, fs1);
         //fs4 << "# gen = " << i << endl;
         cout << " gen = " << i << endl;
         //display(parent_pop, gp, i);

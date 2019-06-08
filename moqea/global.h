@@ -39,6 +39,7 @@ extern int nobj;
 extern int ngen;
 extern int nrealcross;
 extern int nrealmut;
+extern int archive_used; //store pointer used
 
 extern vector<double> lowerbound;
 extern vector<double> upperbound;
@@ -93,10 +94,11 @@ void crossover(chromosome parent1, chromosome parent2, chromosome &child1, chrom
 
 void display(chromosome pop[], FILE *gp, int generation);
 
+void test(chromosome &x, chromosome b, int domi, int g);
 void SSAA_sch1(chromosome &x, chromosome b, int domi);
-void MSAA_sch1(chromosome &x, chromosome b, int domi);
+void MSAA_sch1(chromosome &x, chromosome b, int domi, int g);
 void GDAA_sch1_Xu_Wang(chromosome &x, chromosome b, int domi, int g);
-void GDAA_sch2_Xu_Wang(chromosome &x, chromosome b, int domi,int g);
+void GDAA_sch2_Xu_Wang(chromosome &x, chromosome b, int domi, int g);
 void GDAA_sch2_Ji(chromosome &x, chromosome b, int domi, int g);
 
 void sch1(vector<double> &value, vector<double> &fitness);
