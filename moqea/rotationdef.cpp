@@ -206,6 +206,7 @@ void SSAA_sch1(chromosome &x, chromosome b, int domi)
 void MSAA_sch1(chromosome &x, chromosome b, int domi, int g)
 {
     //double array[] = {0, 0, 0, 0.05, 0.01, 0.025, 0.005, 0.025};
+    //double array[] = {0.02, 0.04, 0.01, 0.02, 0.01, 0.02, 0, 0.01};
     double array[] = {0.02, 0.04, 0.01, 0.02, 0.01, 0.02, 0, 0.01};
     //double array[] = {0, 0, 0, 0.05, 0.01, 0.025, 0.005, 0.025};
     vector<double> theta_set(array, array + 8);
