@@ -1,6 +1,6 @@
 SHELL := /bin/bash
 CC = g++
-CXXFLAGS = -g -Wall -ansi
+CXXFLAGS = -g -std=c++11 -Wall -ansi
 SRCS = $(wildcard *.cpp)
 OBJS = $(SRCS:.cpp=.o)
 
