@@ -9,21 +9,20 @@ int ngen;
 int nobj;
 int dimension;
 int nbit = 15;
-vector<double> lowerbound;
-vector<double> upperbound;
+int nrealcross;
+int nrealmut;
 double pcross_real;
 double pmut_real;
 double eta_c;
 double eta_m;
-int nrealcross;
-int nrealmut;
 string s;
-int archive_used; //store pointer used
+vector<double> lowerbound;
+vector<double> upperbound;
 
 int main(int argc, char **argv)
 {
     srand((unsigned)time(NULL));
-    fstream fs1; //initial
+    fstream fs1; //
     fstream fs2; //final
     fstream fs3; //best
     fstream fs4; //all

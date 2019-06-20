@@ -39,7 +39,6 @@ extern int nobj;
 extern int ngen;
 extern int nrealcross;
 extern int nrealmut;
-extern int archive_used; //store pointer used
 
 extern vector<double> lowerbound;
 extern vector<double> upperbound;
