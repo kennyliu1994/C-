@@ -91,8 +91,6 @@ chromosome tournament(chromosome ind1, chromosome ind2);
 void mutation_pop(chromosome pop[]);
 void crossover(chromosome parent1, chromosome parent2, chromosome &child1, chromosome &child2);
 
-void display(chromosome pop[], FILE *gp, int generation);
-
 void test(chromosome &x, chromosome b, int domi, int g);
 void SSAA_sch1(chromosome &x, chromosome b, int domi);
 void MSAA_sch1(chromosome &x, chromosome b, int domi, int g);
