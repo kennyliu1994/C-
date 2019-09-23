@@ -1,25 +1,21 @@
 SHELL := /bin/bash
-CC := g++
-SRCS = main.cpp
+CC = g++
+CXXFLAGS = -g -std=c++11 -Wall -ansi
+SRCS = $(wildcard *.cpp)
 OBJS = $(SRCS:.cpp=.o)
-EXE = $(OBJS:.o=)
-CXXFLAGS = -g -Wall
 
 .SUFFIXES:
 .SUFFIXS: .c .cpp .o
 .PHONY: all clean run
 
-all: linker $(EXE) run
-linker: 
-	g++ -c lib.cpp
-	ar -rc lib.a lib.o
-$(EXE): $(OBJS)
-	$(CC) $(CXXFLAGS) $^ -o $@ lib.a
-	#g++ -g -Wall main.o -o main
-$(OBJS): $(SRCS)
-	$(CC) $(CXXFLAGS) -c $^
-	#g++ -g -Wall -c main.cpp
-run: 
-	./$(EXE)
+all: main
+main: $(OBJS)
+	@$(CC) $(CXXFLAGS) $^ -o $@
+%.o: %.cpp kenny_lib.h
+	@$(CC) $(CXXFLAGS) -c $<
+test:
+	@# ./main [popsize] [item] [max_generation] [alpha] [beta0] [gamma] [omega] [c1] [c2]
+	@# ./main 10 2 1 0.2 1 0.1 0.9 1 1
+	@ ./main
 clean: 
-	rm -rf $(OBJS) $(EXE) lib.a lib.o
+	rm -rf $(OBJS) main
