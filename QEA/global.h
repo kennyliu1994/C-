@@ -21,25 +21,15 @@ public:
 extern int popsize;
 extern int item;
 extern int max_gen;
-// extern vector<vector<double> > d;
-// extern double ff_alpha;
-// extern double ff_beta0;
-// extern double ff_beta;
-// extern double ff_gamma;
-// extern double ff_omega;
-// extern double ff_c1;
-// extern double ff_c2;
 
-// void load_parameter(char **argv);
+void load_parameter(char **argv);
 void initialize(individual[]);
 void make(individual[]);
 void repair(individual[]);
 void evaluate(individual[]);
 void first_store(individual[], individual[], individual &);
-// void ff_distance(individual, individual, int, int);
-// void Q_update(individual[], int, int);
-// void PSO_update(individual[], individual[], individual, int, int);
+void update(individual[], individual[]);
 void store(individual[], individual[], individual &);
-// void output(individual[], individual);
+void output(individual[], individual);
 
 #endif

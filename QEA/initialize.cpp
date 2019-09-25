@@ -11,7 +11,6 @@ void initialize(individual Q[])
         Q[i].w.assign(item, 0);
         Q[i].p.assign(item, 0);
         Q[i].C = 0;
-        Q[i].fitness = 0;
     }
     //simple knapsack
     kenny_rand rd;

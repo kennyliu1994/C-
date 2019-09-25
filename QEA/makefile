@@ -14,8 +14,7 @@ main: $(OBJS)
 %.o: %.cpp kenny_lib.h
 	@$(CC) $(CXXFLAGS) -c $<
 test:
-	@# ./main [popsize] [item] [max_generation] [alpha] [beta0] [gamma] [omega] [c1] [c2]
-	@# ./main 10 2 1 0.2 1 0.1 0.9 1 1
-	@ ./main
+	@# ./main [popsize] [item] [max_gen]
+	@# ./main 10 1000 2
 clean: 
 	rm -rf $(OBJS) main
