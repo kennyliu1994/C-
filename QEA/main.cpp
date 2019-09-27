@@ -42,6 +42,6 @@ int main(int argc, char **argv)
     fs.open("./output/output.out", ios::app);
     // cout << "共 " << (end - start) / CLOCKS_PER_SEC << " 秒" << endl;
     fs << " 共 " << (end - start) / CLOCKS_PER_SEC << " 秒 ";
-    fs << count << endl;
+    fs << count;
     fs.close();
 }
