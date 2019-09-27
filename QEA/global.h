@@ -21,6 +21,7 @@ public:
 extern int popsize;
 extern int item;
 extern int max_gen;
+extern int count; //evaluation count
 
 void load_parameter(char **argv);
 void initialize(individual[]);
