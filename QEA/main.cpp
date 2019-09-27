@@ -33,7 +33,7 @@ int main(int argc, char **argv)
         evaluate(Q);
         update(Q, B);
         store(Q, B, b);
-        //migration
+        // migration(B, b, t);
         cout << t << endl;
     }
     output(B, b);

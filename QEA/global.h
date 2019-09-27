@@ -31,6 +31,8 @@ void evaluate(individual[]);
 void first_store(individual[], individual[], individual &);
 void update(individual[], individual[]);
 void store(individual[], individual[], individual &);
+bool cmp_best(const individual &, const individual &);
+void migration(individual[], individual, int);
 void output(individual[], individual);
 
 #endif

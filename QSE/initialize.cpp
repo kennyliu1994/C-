@@ -19,6 +19,7 @@ void initialize(individual Q[])
         {
             Q[i].w[j] = rd.int11(1, 10);
             Q[i].p[j] = Q[i].w[j] + 5;
+            // Q[i].p[j] = Q[i].w[j] + rd.int11(0, 5);
             Q[i].C += ((double)Q[i].w[j] / 2);
         }
     }

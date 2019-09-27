@@ -15,6 +15,6 @@ main: $(OBJS)
 	@$(CC) $(CXXFLAGS) -c $<
 test:
 	@# ./main [popsize] [item] [max_gen] [x] [omega] [c1] [c2]
-	@ ./main 10 1000 100000 0.99 0.7298 1.42 1.57
+	@ ./main 10 100 100 0.99 0.7298 1.42 1.57
 clean: 
 	rm -rf $(OBJS) main
