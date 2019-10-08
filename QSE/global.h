@@ -24,7 +24,7 @@ extern double ff_x;
 extern double ff_omega;
 extern double ff_c1;
 extern double ff_c2;
-extern int count; //evaluation count
+extern int e_count; //evaluation count
 
 void load_parameter(char **argv);
 void initialize(individual[]);
@@ -34,6 +34,9 @@ void evaluate(individual[]);
 void first_store(individual[], individual[], individual &);
 void update(individual[], individual[], individual &);
 void store(individual[], individual[], individual &);
+bool cmp_best(const individual &, const individual &);
+void migration(individual[], individual, int);
+void output(individual, fstream &);
 void output(individual[], individual);
 
 #endif

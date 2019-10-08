@@ -9,6 +9,6 @@ void evaluate(individual Q[])
         {
             Q[i].fitness += Q[i].p[j] * Q[i].x[j];
         }
+        e_count++;
     }
-    count++;
 }

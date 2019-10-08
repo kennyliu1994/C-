@@ -13,8 +13,8 @@ main: $(OBJS)
 	@$(CC) $(CXXFLAGS) $^ -o $@
 %.o: %.cpp kenny_lib.h
 	@$(CC) $(CXXFLAGS) -c $<
-test:
+run:
 	@# ./main [popsize] [item] [max_gen]
-	@ ./main 30 100 1000
+	@ ./main 10 1000 100000
 clean: 
 	rm -rf $(OBJS) main

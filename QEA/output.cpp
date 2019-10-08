@@ -2,6 +2,11 @@
 #include "algorithm"
 #include <fstream>
 
+void output(individual b, fstream &fs)
+{
+    fs << e_count << " " << b.fitness << endl;
+}
+
 void best(individual b, double &Best)
 {
     Best = b.fitness;

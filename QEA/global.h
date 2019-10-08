@@ -21,7 +21,7 @@ public:
 extern int popsize;
 extern int item;
 extern int max_gen;
-extern int count; //evaluation count
+extern int e_count; //evaluation count
 
 void load_parameter(char **argv);
 void initialize(individual[]);
@@ -33,6 +33,7 @@ void update(individual[], individual[]);
 void store(individual[], individual[], individual &);
 bool cmp_best(const individual &, const individual &);
 void migration(individual[], individual, int);
+void output(individual, fstream &);
 void output(individual[], individual);
 
 #endif
