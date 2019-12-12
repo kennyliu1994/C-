@@ -1,8 +1,9 @@
 SHELL := /bin/bash
-CC = g++
-CXXFLAGS = -g -std=c++11 -Wall -ansi
-SRCS = $(wildcard *.cpp)
-OBJS = $(SRCS:.cpp=.o)
+CXX := g++
+CXXFLAGS := -g -std=c++11 -O3 -Wall
+SRCS := $(wildcard *.cpp)
+OBJS := $(SRCS:.cpp=.o)
+EXEC := $(SRCS:.cpp=)
 
 .SUFFIXES:
 .SUFFIXS: .c .cpp .o
@@ -10,11 +11,12 @@ OBJS = $(SRCS:.cpp=.o)
 
 all: main
 main: $(OBJS)
-	@$(CC) $(CXXFLAGS) $^ -o $@
-%.o: %.cpp kenny_lib.h
-	@$(CC) $(CXXFLAGS) -c $<
-run:
-	@# ./main [popsize] [item] [max_gen] [x] [omega] [c1] [c2]
-	@ ./main 10 1000 100000 0.99 0.7298 1.42 1.57
-clean: 
-	rm -rf $(OBJS) main
+	$(CXX) $(CXXFLAGS) $^ -o $@ 
+$(OBJS): $(SRCS)
+	$(CXX) $(CXXFLAGS) -c $^
+run: 
+	# ./main [run] [iter] [pop] [item]
+	./main 1 1000 10 1000
+dep:
+clean:
+	-rm -rf *.o $(EXEC)

@@ -1,6 +1,6 @@
 SHELL := /bin/bash
 CXX := g++
-CXXFLAGS := -g -std=c++11 -O3 -Wall
+CXXFLAGS := -g -std=c++11 -O0 -Wall
 SRCS := $(wildcard *.cpp)
 OBJS := $(SRCS:.cpp=.o)
 EXEC := $(SRCS:.cpp=)
@@ -12,11 +12,11 @@ EXEC := $(SRCS:.cpp=)
 all: main
 main: $(OBJS)
 	$(CXX) $(CXXFLAGS) $^ -o $@ 
+	# $(CXX) $(CXXFLAGS) $^ -o $@ -lpthread
 $(OBJS): $(SRCS)
 	$(CXX) $(CXXFLAGS) -c $^
 run: 
-	# ./main [run] [iter] [pop] [item]
-	./main 1 1000 10 1000
+	./main
 dep:
 clean:
 	-rm -rf *.o $(EXEC)

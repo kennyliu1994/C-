@@ -1,51 +1,290 @@
-#include "global.h"
+#include "main.h"
+#include "Kenny.h"
+
 #include <time.h>
-#include <stdlib.h> /* srand, rand , atoi*/
+#include "algorithm"
+#include <math.h>
 #include <fstream>
 
-int popsize;
-int item;
-int max_gen;
-int e_count; //evaluation count
+int max_run;
+int max_iter;
+int max_pop;
+int max_item;
+int eva_count;
+string output_path = "./output/result.txt";
+string gnuplot_path;
+quantum_evolutionary_algorithm QEA;
+run30 RUN30;
+gnuplot GNUPLOT[30];
 
 int main(int argc, char **argv)
 {
-    fstream fs_plot;
-    fs_plot.open("./gnuplot/QEA.txt", ios::out);
     srand((unsigned)time(NULL));
-    int t;
-    double start, end;
-    load_parameter(argv);
-    individual Q[popsize];
-    individual B[popsize];
-    individual b;
-    start = clock();
-    t = 0;
-    e_count = 0;
-    initialize(Q);
-    make(Q);
-    repair(Q);
-    evaluate(Q);
-    first_store(Q, B, b);
-    output(b, fs_plot);
-    while (t < max_gen)
+    Kenny_convert ct;
+
+    max_run = atoi(argv[1]);
+    max_iter = atoi(argv[2]);
+    max_pop = atoi(argv[3]);
+    max_item = atoi(argv[4]);
+
+    gnuplot_path = "./gnuplot/" + ct.char2str(argv[1]) + "_" + ct.char2str(argv[2]) + "_" + ct.char2str(argv[3]) + "_" + ct.char2str(argv[4]) + ".txt";
+
+    clock_t start = clock();
+    run();
+    clock_t end = clock();
+    RUN30.output(start, end);
+    GNUPLOT[0].output();
+}
+
+void run()
+{
+    for (int run = 0; run < max_run; run++)
     {
-        t++;
-        make(Q);
-        repair(Q);
-        evaluate(Q);
-        update(Q, B);
-        store(Q, B, b);
-        migration(B, b, t);
-        output(b, fs_plot);
-        cout << t << endl;
+        cout << "run " << run << endl;
+
+        individual Q[max_pop];
+        individual pbest[max_pop];
+        individual gbest;
+        eva_count = 0;
+
+        QEA.initialize(Q);
+        QEA.make(Q);
+        QEA.repair(Q);
+        QEA.store(Q, pbest, gbest, run);
+        for (int t = 0; t < max_iter; t++)
+        {
+            // cout << t << endl;
+            for (int i = 0; i < max_pop; i++)
+            {
+                QEA.make(Q, i);
+                QEA.repair(Q, i);
+                QEA.update(Q, pbest, i);
+                QEA.evaluate(Q, i, run);
+                QEA.store(Q, pbest, gbest, i, run);
+                QEA.migration(pbest, gbest, t);
+            }
+        }
+        RUN30.gbest.push_back(gbest.fitness);
     }
-    output(B, b);
-    end = clock();
-    fstream fs;
-    fs.open("./output/output.out", ios::app);
-    // cout << "共 " << (end - start) / CLOCKS_PER_SEC << " 秒" << endl;
-    fs << " 共 " << (end - start) / CLOCKS_PER_SEC << " 秒 ";
-    fs << e_count;
-    fs.close();
+}
+
+void quantum_evolutionary_algorithm::initialize(individual Q[])
+{
+    for (int i = 0; i < max_pop; i++)
+    {
+        Q[i].alpha.assign(max_item, 1 / sqrt(2)); //Q(0)每個為根號2分之1
+        Q[i].beta.assign(max_item, 1 / sqrt(2));
+        Q[i].x.assign(max_item, 0);
+        Q[i].w.assign(max_item, 0);
+        Q[i].p.assign(max_item, 0);
+        Q[i].c = 0;
+    }
+    Kenny_rand rd;
+    for (int i = 0; i < max_pop; i++)
+    {
+        for (int j = 0; j < max_item; j++)
+        {
+            Q[i].w[j] = rd.int11(1, 10);
+            Q[i].p[j] = Q[i].w[j] + 5;
+            Q[i].c += ((double)Q[i].w[j] / 2);
+        }
+    }
+}
+
+void quantum_evolutionary_algorithm::make(individual Q[])
+{
+    Kenny_rand rd;
+    for (int i = 0; i < max_pop; i++)
+    {
+        for (int j = 0; j < max_item; j++)
+        {
+            if (rd.double10(0, 1) < pow(Q[i].beta[j], 2))
+                Q[i].x[j] = 1;
+            else
+                Q[i].x[j] = 0;
+        }
+    }
+}
+
+double current_weight(individual Q)
+{
+    double sum_w = 0;
+    for (int i = 0; i < max_item; i++)
+        sum_w += Q.w[i] * Q.x[i];
+    return sum_w;
+}
+
+void quantum_evolutionary_algorithm::repair(individual Q[])
+{
+    Kenny_rand rd;
+    bool overfilled;
+    overfilled = false;
+    for (int i = 0; i < max_pop; i++)
+    {
+        int index;
+        if (current_weight(Q[i]) > Q[i].c)
+            overfilled = true;
+        while (overfilled)
+        {
+            Q[i].x[rd.int11(0, max_item - 1)] = 0;
+            if (current_weight(Q[i]) <= Q[i].c)
+                overfilled = false;
+        }
+        while (!overfilled)
+        {
+            index = rd.int11(0, max_item - 1);
+            Q[i].x[index] = 1;
+            if (current_weight(Q[i]) > Q[i].c)
+                overfilled = true;
+        }
+        Q[i].x[index] = 0;
+    }
+}
+
+void quantum_evolutionary_algorithm::store(individual Q[], individual pbest[], individual &gbest, const int run)
+{
+    gbest = Q[0];
+    for (int i = 0; i < max_pop; i++)
+    {
+        Q[i].fitness = 0;
+        for (int j = 0; j < max_item; j++)
+            Q[i].fitness += Q[i].p[j] * Q[i].x[j];
+        eva_count++;
+        pbest[i] = Q[i];
+        if (gbest.fitness < Q[i].fitness)
+            gbest = Q[i];
+        GNUPLOT[run].eva_count.push_back(eva_count);
+        GNUPLOT[run].gbest.push_back(gbest.fitness);
+    }
+}
+
+void quantum_evolutionary_algorithm::make(individual Q[], const int i)
+{
+    Kenny_rand rd;
+    for (int j = 0; j < max_item; j++)
+    {
+        if (rd.double10(0, 1) < pow(Q[i].beta[j], 2))
+            Q[i].x[j] = 1;
+        else
+            Q[i].x[j] = 0;
+    }
+}
+
+void quantum_evolutionary_algorithm::repair(individual Q[], const int i)
+{
+    Kenny_rand rd;
+    bool overfilled;
+    overfilled = false;
+    int index;
+    if (current_weight(Q[i]) > Q[i].c)
+        overfilled = true;
+    while (overfilled)
+    {
+        Q[i].x[rd.int11(0, max_item - 1)] = 0;
+        if (current_weight(Q[i]) <= Q[i].c)
+            overfilled = false;
+    }
+    while (!overfilled)
+    {
+        index = rd.int11(0, max_item - 1);
+        Q[i].x[index] = 1;
+        if (current_weight(Q[i]) > Q[i].c)
+            overfilled = true;
+    }
+    Q[i].x[index] = 0;
+}
+
+void quantum_evolutionary_algorithm::update(individual Q[], individual pbest[], const int i)
+{
+    for (int j = 0; j < max_item; j++)
+    {
+        if ((Q[i].x[j] == 0) && (pbest[i].x[j] == 1) && (Q[i].fitness < pbest[i].fitness))
+            theta = 0.01 * M_PI;
+        else if ((Q[i].x[j] == 1) && (pbest[i].x[j] == 0) && (Q[i].fitness < pbest[i].fitness))
+            theta = -0.01 * M_PI;
+        if (Q[i].alpha[j] * Q[i].beta[j] < 0)
+            theta = -theta;
+        Q[i].alpha[j] = cos(theta) * Q[i].alpha[j] - sin(theta) * Q[i].beta[j];
+        Q[i].beta[j] = sin(theta) * Q[i].alpha[j] + cos(theta) * Q[i].beta[j];
+    }
+}
+
+void quantum_evolutionary_algorithm::evaluate(individual Q[], const int i, const int run)
+{
+    Q[i].fitness = 0;
+    for (int j = 0; j < max_item; j++)
+        Q[i].fitness += Q[i].p[j] * Q[i].x[j];
+    eva_count++;
+    GNUPLOT[run].eva_count.push_back(eva_count);
+}
+
+void quantum_evolutionary_algorithm::store(individual Q[], individual pbest[], individual &gbest, const int i, const int run)
+{
+    if (pbest[i].fitness < Q[i].fitness)
+        pbest[i] = Q[i];
+    if (gbest.fitness < Q[i].fitness)
+        gbest = Q[i];
+    GNUPLOT[run].gbest.push_back(gbest.fitness);
+}
+
+bool cmp_best(const individual &a, const individual &b)
+{
+    return a.fitness > b.fitness;
+};
+
+void quantum_evolutionary_algorithm::migration(individual pbest[], individual gbest, const int t)
+{
+    if (t % 10 == 0)
+    {
+        for (int i = 0; i < max_pop; i++)
+            pbest[i] = gbest;
+    }
+    else
+    {
+        vector<individual> tmp;
+        for (int i = 0; i < max_pop; i++)
+            tmp.push_back(pbest[i]);
+        sort(tmp.begin(), tmp.end(), cmp_best);
+        for (int i = 0; i < max_pop; i++)
+        {
+            pbest[i] = tmp[0];
+        }
+    }
+}
+
+void run30::output(clock_t t1, clock_t t2)
+{
+    best = *max_element(begin(gbest), end(gbest));
+    worst = *min_element(begin(gbest), end(gbest));
+    for (int i = 0; i < max_run; i++)
+    {
+        average += gbest[i];
+    }
+    average /= max_run;
+    fstream fs_result;
+    fs_result.open(output_path.c_str(), ios::app);
+    fs_result << endl
+              << max_run << " "
+              << max_iter << " " << max_pop << " " << max_item << " "
+              << best << " " << worst << " " << average << " " << eva_count << " "
+              << double(t2 - t1) / CLOCKS_PER_SEC << " sec";
+    ;
+    fs_result.close();
+}
+
+void gnuplot::output()
+{
+    for (int i = 1; i < max_run; i++)
+    {
+        for (unsigned int j = 0; j < GNUPLOT[0].eva_count.size(); j++)
+            GNUPLOT[0].gbest[j] += GNUPLOT[i].gbest[j];
+    }
+    fstream fs_gnuplot;
+    fs_gnuplot.open(gnuplot_path.c_str(), ios::out);
+    for (unsigned int i = 0; i < GNUPLOT[0].eva_count.size(); i++)
+    {
+        fs_gnuplot << eva_count[i] << " "
+                   << GNUPLOT[0].gbest[i] / max_run << endl;
+    }
+    fs_gnuplot.close();
 }
